@@ -114,7 +114,7 @@ return [
     |
     */
 
-    'asset_url' => env('APP_URL') . '/vendor',
+    'asset_url' => null,
     'inject_assets' => true,
 
     /*
