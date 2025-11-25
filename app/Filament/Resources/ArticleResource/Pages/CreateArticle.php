@@ -30,7 +30,7 @@ class CreateArticle extends CreateRecord
 
                 .fi-fo-rich-editor .attachment img,
                 .fi-fo-rich-editor figure.attachment img {
-                    width: 100%;
+                    max-width: 100%;
                     height: auto;
                     display: block;
                     border-radius: 4px;
@@ -137,5 +137,10 @@ class CreateArticle extends CreateRecord
                 }
             </style>
         ');
+    }
+
+    public function getFooter(): ?\Illuminate\Contracts\View\View
+    {
+        return view('filament.components.image-properties-modal');
     }
 }
