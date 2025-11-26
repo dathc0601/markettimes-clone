@@ -11,12 +11,12 @@
         @foreach($articles as $article)
         <item>
             <title><![CDATA[{{ $article->title }}]]></title>
-            <link>{{ route('article.show', [$article->category, $article->slug . '-' . $article->id]) }}</link>
+            <link>{{ route('article.show', $article->slug . '-' . $article->id) }}</link>
             <description><![CDATA[{{ $article->summary }}]]></description>
             <dc:creator>{{ $article->author->name }}</dc:creator>
             <category>{{ $article->category->name }}</category>
             <pubDate>{{ $article->published_at->toRssString() }}</pubDate>
-            <guid isPermaLink="true">{{ route('article.show', [$article->category, $article->slug . '-' . $article->id]) }}</guid>
+            <guid isPermaLink="true">{{ route('article.show', $article->slug . '-' . $article->id) }}</guid>
             @if($article->featured_image)
             <enclosure url="{{ $article->getImageUrl('large') }}" type="image/jpeg" />
             @endif

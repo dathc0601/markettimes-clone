@@ -178,6 +178,7 @@ class ArticleResource extends Resource
                 Tables\Columns\ImageColumn::make('featured_image')
                     ->square()
                     ->label('Image')
+                    ->disk('s3')
                     ->getStateUsing(function ($record) {
                         if (!$record->featured_image) {
                             return null;

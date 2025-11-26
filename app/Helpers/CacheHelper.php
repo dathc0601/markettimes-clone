@@ -45,11 +45,42 @@ class CacheHelper
      */
     public static function clearHomepageCache(): void
     {
+        // Clear legacy cache keys
         Cache::forget('homepage.categories');
         Cache::forget('homepage.featured_category_articles');
         Cache::forget('homepage.featured_articles');
         Cache::forget('homepage.latest_articles');
         Cache::forget('homepage.most_read');
+        Cache::forget('homepage.mostRead');
+
+        // Clear new section-based cache keys
+        self::clearHomepageSectionCaches();
+    }
+
+    /**
+     * Clear homepage section caches (new configurable sections)
+     *
+     * @return void
+     */
+    public static function clearHomepageSectionCaches(): void
+    {
+        $sections = [
+            'hero',
+            'featured_grid',
+            'most_read_teal',
+            'sidebar_most_read',
+            'sidebar_valuation',
+            'sidebar_business',
+            'sidebar_special',
+            'category_blocks'
+        ];
+
+        foreach ($sections as $section) {
+            Cache::forget("homepage.section.{$section}");
+        }
+
+        // Clear homepage config cache
+        Cache::forget('setting.homepage_config');
     }
 
     /**

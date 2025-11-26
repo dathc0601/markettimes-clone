@@ -8,6 +8,6 @@
 {!! \App\Helpers\SeoHelper::generateBreadcrumbSchema([
     ['name' => 'Trang chủ', 'url' => route('home')],
     ['name' => $article->category->name, 'url' => route('category.show', $article->category->slug)],
-    ['name' => $article->title, 'url' => route('article.show', [$article->category->slug, $article->slug])]
+    ['name' => $article->title, 'url' => route('article.show', $article->slug . '-' . $article->id)]
 ]) !!}
 </script>

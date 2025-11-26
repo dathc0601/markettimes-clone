@@ -74,7 +74,7 @@ class GenerateSitemap extends Command
             $priority = $article->is_featured ? 0.9 : 0.6;
 
             $sitemap->add(
-                Url::create(route('article.show', [$article->category->slug, $article->slug]))
+                Url::create(route('article.show', $article->slug . '-' . $article->id))
                     ->setLastModificationDate($article->updated_at)
                     ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
                     ->setPriority($priority)
@@ -102,7 +102,7 @@ class GenerateSitemap extends Command
             ->get();
 
         foreach ($recentArticles as $article) {
-            $url = Url::create(route('article.show', [$article->category->slug, $article->slug]))
+            $url = Url::create(route('article.show', $article->slug . '-' . $article->id))
                 ->setLastModificationDate($article->updated_at)
                 ->addNews(
                     'Market Times',           // Publication name

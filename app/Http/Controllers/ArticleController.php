@@ -3,13 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
-use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class ArticleController extends Controller
 {
-    public function show(Request $request, Category $category, $slug)
+    public function show(Request $request, $slug)
     {
         // Extract ID from slug-id format
         $parts = explode('-', $slug);

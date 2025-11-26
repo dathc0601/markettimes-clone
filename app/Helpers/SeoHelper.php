@@ -49,7 +49,7 @@ class SeoHelper
             $meta['title'] = $model->meta_title ?: $model->title;
             $meta['description'] = $model->meta_description ?: Str::limit(strip_tags($model->summary ?: $model->content), 160);
             $meta['image'] = $model->featured_image ? asset($model->featured_image) : $defaultImage;
-            $meta['url'] = route('article.show', [$model->category->slug, $model->slug]);
+            $meta['url'] = route('article.show', $model->slug . '-' . $model->id);
             $meta['type'] = 'article';
             $meta['published_time'] = $model->published_at?->toIso8601String();
             $meta['author'] = $model->author?->name;

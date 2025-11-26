@@ -37,7 +37,7 @@
                             <!-- Large Featured Article -->
                             <article class="overflow-hidden">
                                 @php
-                                    $heroUrl = route('article.show', [$heroArticle->category, $heroArticle->slug . '-' . $heroArticle->id]);
+                                    $heroUrl = route('article.show', $heroArticle->slug . '-' . $heroArticle->id);
                                     $heroImageUrl = $heroArticle->getImageUrl('large') ?? asset('images/placeholder.jpg');
                                 @endphp
                                 <a href="{{ $heroUrl }}" class="block">
@@ -64,7 +64,7 @@
                             <div class="space-y-3">
                                 @foreach($featuredArticles->take(2) as $article)
                                     @php
-                                        $articleUrl = route('article.show', [$article->category, $article->slug . '-' . $article->id]);
+                                        $articleUrl = route('article.show', $article->slug . '-' . $article->id);
                                     @endphp
                                     <article class="border-l-4 border-primary pl-3 py-1">
                                         <a href="{{ $articleUrl }}" class="group">
@@ -83,7 +83,7 @@
                                 @foreach($featuredArticles->skip(2)->take(2) as $article)
                                     <article class="overflow-hidden">
                                         @php
-                                            $articleUrl = route('article.show', [$article->category, $article->slug . '-' . $article->id]);
+                                            $articleUrl = route('article.show', $article->slug . '-' . $article->id);
                                             $imageUrl = $article->getImageUrl('medium') ?? asset('images/placeholder.jpg');
                                         @endphp
                                         <a href="{{ $articleUrl }}" class="block">

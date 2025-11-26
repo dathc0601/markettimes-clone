@@ -1,7 +1,7 @@
 @props(['article', 'layout' => 'horizontal'])
 
 @php
-    $articleUrl = route('article.show', [$article->category, $article->slug . '-' . $article->id]);
+    $articleUrl = route('article.show', $article->slug . '-' . $article->id);
     $publishedDate = $article->published_at ?? $article->created_at;
 
     // Determine badge class - use accent for featured categories, primary otherwise

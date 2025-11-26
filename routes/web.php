@@ -47,8 +47,8 @@ Route::post('/comments/{comment}/like', [CommentController::class, 'like'])
     ->middleware('throttle:30,60')
     ->name('comments.like');
 
-// Category pages (must be before article routes to avoid conflicts)
-Route::get('/{category:slug}', [CategoryController::class, 'show'])->name('category.show');
+// Article pages (matches: /article-slug-123.html)
+Route::get('/{slug}.html', [ArticleController::class, 'show'])->name('article.show');
 
-// Article pages (matches markettimes.vn URL pattern: /category/article-slug-123.html)
-Route::get('/{category:slug}/{slug}.html', [ArticleController::class, 'show'])->name('article.show');
+// Category pages (after article route - .html extension differentiates them)
+Route::get('/{category:slug}', [CategoryController::class, 'show'])->name('category.show');

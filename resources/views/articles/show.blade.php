@@ -220,7 +220,7 @@
                     <!-- Large Featured Article -->
                     <article class="overflow-hidden">
                         @php
-                            $heroUrl = route('article.show', [$heroArticle->category, $heroArticle->slug . '-' . $heroArticle->id]);
+                            $heroUrl = route('article.show', $heroArticle->slug . '-' . $heroArticle->id);
                             $heroImageUrl = $heroArticle->getImageUrl('large') ?? asset('images/placeholder.jpg');
                         @endphp
                         <a href="{{ $heroUrl }}" class="block">
@@ -247,7 +247,7 @@
                     <div class="space-y-3">
                         @foreach($featuredArticles->take(2) as $featuredArticle)
                             @php
-                                $articleUrl = route('article.show', [$featuredArticle->category, $featuredArticle->slug . '-' . $featuredArticle->id]);
+                                $articleUrl = route('article.show', $featuredArticle->slug . '-' . $featuredArticle->id);
                             @endphp
                             <article class="border-l-4 border-primary pl-3 py-1">
                                 <a href="{{ $articleUrl }}" class="group">
@@ -266,7 +266,7 @@
                         @foreach($featuredArticles->skip(2)->take(4) as $featuredArticle)
                             <article class="overflow-hidden">
                                 @php
-                                    $articleUrl = route('article.show', [$featuredArticle->category, $featuredArticle->slug . '-' . $featuredArticle->id]);
+                                    $articleUrl = route('article.show', $featuredArticle->slug . '-' . $featuredArticle->id);
                                     $imageUrl = $featuredArticle->getImageUrl('medium') ?? asset('images/placeholder.jpg');
                                 @endphp
                                 <a href="{{ $articleUrl }}" class="block">
@@ -294,7 +294,7 @@
                     @foreach($featuredArticles->skip(6)->take(2) as $featuredArticle)
                         <article class="flex gap-4 py-4 border-b border-gray-200">
                             @php
-                                $articleUrl = route('article.show', [$featuredArticle->category, $featuredArticle->slug . '-' . $featuredArticle->id]);
+                                $articleUrl = route('article.show', $featuredArticle->slug . '-' . $featuredArticle->id);
                                 $imageUrl = $featuredArticle->getImageUrl('medium') ?? asset('images/placeholder.jpg');
                             @endphp
                             <a href="{{ $articleUrl }}" class="flex-shrink-0">

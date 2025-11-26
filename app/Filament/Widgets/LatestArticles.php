@@ -22,7 +22,19 @@ class LatestArticles extends BaseWidget
             ->columns([
                 Tables\Columns\ImageColumn::make('featured_image')
                     ->square()
-                    ->label('Image'),
+                    ->label('Image')
+                    ->disk('s3')
+                    ->getStateUsing(function ($record) {
+                        if (!$record->featured_image) {
+                            return null;
+                        }
+                        // Handle both old (string) and new (JSON) formats
+                        $paths = is_string($record->featured_image) ? json_decode($record->featured_image, true) : $record->featured_image;
+                        if (is_array($paths)) {
+                            return $paths['thumbnail'] ?? $paths['original'] ?? null;
+                        }
+                        return $record->featured_image;
+                    }),
 
                 Tables\Columns\TextColumn::make('title')
                     ->searchable()

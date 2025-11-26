@@ -2,105 +2,84 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Article;
-use App\Models\Category;
+use App\Filament\Pages\HomepageManagement;
+use App\Services\HomepageConfigService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 
 class HomeController extends Controller
 {
+    protected HomepageConfigService $configService;
+
+    public function __construct(HomepageConfigService $configService)
+    {
+        $this->configService = $configService;
+    }
+
     public function index(Request $request)
     {
-        // Latest general articles with pagination (12 per page initially, then 6 per load)
-        $latestArticles = Article::with(['category', 'author'])
-            ->published()
-            ->latest('published_at')
-            ->paginate(12);
+        // Check for preview mode (admin only)
+        $isPreview = $this->isValidPreviewRequest($request);
+
+        // Get homepage data from config service
+        $data = $this->configService->getHomepageData($isPreview);
 
         // Handle AJAX request for load more
         if ($request->ajax()) {
             $html = view('home.partials.latest-articles', [
-                'articles' => $latestArticles
+                'articles' => $data['latestArticles']
             ])->render();
 
             return response()->json([
                 'html' => $html,
-                'next_page' => $latestArticles->hasMorePages() ? $latestArticles->currentPage() + 1 : null,
+                'next_page' => $data['latestArticles']->hasMorePages()
+                    ? $data['latestArticles']->currentPage() + 1
+                    : null,
             ]);
         }
 
-        // Hero article (single, most recent featured)
-        $heroArticle = Article::with(['category', 'author'])
-            ->published()
-            ->featured()
-            ->latest('published_at')
-            ->first();
+        return view('home.index', [
+            'heroArticle' => $data['heroArticle'],
+            'featuredArticles' => $data['featuredArticles'],
+            'latestArticles' => $data['latestArticles'],
+            'mostRead' => $data['sidebarMostRead'],
+            'mostReadTeal' => $data['mostReadTeal'],
+            'valuationArticles' => $data['valuationArticles'],
+            'businessArticles' => $data['businessArticles'],
+            'specialPublications' => $data['specialPublications'],
+            'categories' => $data['categories'],
+            'sectionConfig' => $data['sectionConfig'],
+            'sidebarBlocks' => $data['sidebarBlocks'],
+            'isPreview' => $isPreview,
+        ]);
+    }
 
-        // Secondary featured articles (10 articles for new layout)
-        $featuredArticles = Article::with(['category', 'author'])
-            ->published()
-            ->featured()
-            ->latest('published_at')
-            ->skip(1)
-            ->take(10)
-            ->get();
+    /**
+     * Validate preview request
+     */
+    protected function isValidPreviewRequest(Request $request): bool
+    {
+        if ($request->get('preview') !== 'draft') {
+            return false;
+        }
 
-        // Most read (cached for 15 minutes)
-        $mostRead = Cache::remember('homepage.mostRead', 900, function() {
-            return Article::with(['category', 'author'])
-                ->published()
-                ->orderBy('view_count', 'desc')
-                ->take(5)
-                ->get();
-        });
+        $token = $request->get('token');
+        if (!$token) {
+            return false;
+        }
 
-        // Valuation Forum (Diễn đàn Thẩm định giá)
-        $valuationArticles = Article::with(['category', 'author'])
-            ->published()
-            ->whereHas('category', fn($q) => $q->where('slug', 'tham-dinh-gia'))
-            ->latest('published_at')
-            ->take(4)
-            ->get();
+        // Must be logged in
+        if (!auth()->check()) {
+            return false;
+        }
 
-        // Business Bridge (Nhịp cầu doanh nghiệp)
-        $businessArticles = Article::with(['category', 'author'])
-            ->published()
-            ->whereHas('category', fn($q) => $q->where('slug', 'kinh-doanh'))
-            ->latest('published_at')
-            ->take(5)
-            ->get();
+        $user = auth()->user();
 
-        // Special Publications (Đặc san)
-        $specialPublications = Article::with(['category', 'author'])
-            ->published()
-            ->where('is_special_publication', true)
-            ->latest('published_at')
-            ->take(2)
-            ->get();
+        // Must be admin or editor
+        if (!in_array($user->role, ['admin', 'editor'])) {
+            return false;
+        }
 
-        // Category blocks (cached for 1 hour)
-        $categories = Cache::remember('homepage.categories', 3600, function() {
-            return Category::with(['articles' => function($q) {
-                $q->with(['category', 'author'])
-                    ->published()
-                    ->latest('published_at')
-                    ->take(4);
-            }])
-            ->whereNull('parent_id')
-            ->where('is_active', true)
-            ->orderBy('order')
-            ->get();
-        });
-
-        return view('home.index', compact(
-            'heroArticle',
-            'featuredArticles',
-            'latestArticles',
-            'mostRead',
-            'valuationArticles',
-            'businessArticles',
-            'specialPublications',
-            'categories'
-        ));
+        // Validate the token
+        return HomepageManagement::validatePreviewToken($token, $user->id);
     }
 }

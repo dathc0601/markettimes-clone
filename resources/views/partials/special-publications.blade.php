@@ -1,11 +1,11 @@
 @if(isset($specialPublications) && $specialPublications->count() > 0)
 <div class="bg-white rounded-lg p-6">
-    <x-section-heading title="Đặc san" />
+    <x-section-heading title="Đặc biệt" />
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
         @foreach($specialPublications as $publication)
             @php
-                $articleUrl = route('article.show', [$publication->category, $publication->slug . '-' . $publication->id]);
+                $articleUrl = route('article.show', $publication->slug . '-' . $publication->id);
                 $imageUrl = $publication->featured_image ? Storage::url($publication->featured_image) : asset('images/placeholder.jpg');
             @endphp
 

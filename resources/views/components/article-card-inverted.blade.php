@@ -1,7 +1,7 @@
 @props(['article'])
 
 @php
-    $articleUrl = route('article.show', [$article->category, $article->slug . '-' . $article->id]);
+    $articleUrl = route('article.show', $article->slug . '-' . $article->id);
     $imageUrl = $article->featured_image ? Storage::url($article->featured_image) : asset('images/placeholder.jpg');
     $publishedDate = $article->published_at ?? $article->created_at;
 @endphp
