@@ -22,7 +22,12 @@ class StatsOverview extends BaseWidget
                     ->descriptionIcon('heroicon-o-newspaper')
                     ->color('success'),
 
-                Stat::make('Published', Article::where('author_id', $user->id)->where('is_published', true)->count())
+                Stat::make('Pending', Article::where('author_id', $user->id)->where('status', 'pending')->count())
+                    ->description('Awaiting approval')
+                    ->descriptionIcon('heroicon-o-clock')
+                    ->color('warning'),
+
+                Stat::make('Published', Article::where('author_id', $user->id)->where('status', 'approved')->where('is_published', true)->count())
                     ->description('Currently published')
                     ->descriptionIcon('heroicon-o-check-circle')
                     ->color('primary'),
@@ -41,7 +46,13 @@ class StatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-o-newspaper')
                 ->color('success'),
 
-            Stat::make('Published Articles', Article::where('is_published', true)->count())
+            Stat::make('Pending Approval', Article::where('status', 'pending')->count())
+                ->description('Articles awaiting review')
+                ->descriptionIcon('heroicon-o-clock')
+                ->color('warning')
+                ->url(route('filament.admin.resources.articles.index', ['tableFilters[status][value]' => 'pending'])),
+
+            Stat::make('Published Articles', Article::where('is_published', true)->where('status', 'approved')->count())
                 ->description('Currently published')
                 ->descriptionIcon('heroicon-o-check-circle')
                 ->color('primary'),
@@ -49,13 +60,8 @@ class StatsOverview extends BaseWidget
             Stat::make('Pending Comments', Comment::where('is_approved', false)->count())
                 ->description('Awaiting moderation')
                 ->descriptionIcon('heroicon-o-clock')
-                ->color('warning')
+                ->color('gray')
                 ->url(route('filament.admin.resources.comments.index')),
-
-            Stat::make('Total Users', User::count())
-                ->description('Registered users')
-                ->descriptionIcon('heroicon-o-users')
-                ->color('info'),
         ];
     }
 }

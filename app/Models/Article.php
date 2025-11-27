@@ -29,12 +29,17 @@ class Article extends Model
         'is_featured',
         'is_special_publication',
         'is_published',
+        'status',
+        'approved_by',
+        'approved_at',
+        'rejection_reason',
         'meta_title',
         'meta_description',
     ];
 
     protected $casts = [
         'published_at' => 'datetime',
+        'approved_at' => 'datetime',
         'is_featured' => 'boolean',
         'is_special_publication' => 'boolean',
         'is_published' => 'boolean',
@@ -81,6 +86,11 @@ class Article extends Model
         return $this->belongsTo(User::class, 'author_id');
     }
 
+    public function approver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
@@ -104,8 +114,19 @@ class Article extends Model
     public function scopePublished($query)
     {
         return $query->where('is_published', true)
+            ->where('status', 'approved')
             ->whereNotNull('published_at')
             ->where('published_at', '<=', now());
+    }
+
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->where('status', 'approved');
     }
 
     public function scopeFeatured($query)

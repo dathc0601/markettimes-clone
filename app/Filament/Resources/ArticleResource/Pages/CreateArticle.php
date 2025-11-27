@@ -11,6 +11,17 @@ class CreateArticle extends CreateRecord
 {
     protected static string $resource = ArticleResource::class;
 
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        // Authors automatically submit for approval
+        if (auth()->user()?->role === 'author') {
+            $data['status'] = 'pending';
+            $data['is_published'] = false;
+        }
+
+        return $data;
+    }
+
     public function getSubheading(): string|Htmlable|null
     {
         return new \Illuminate\Support\HtmlString('

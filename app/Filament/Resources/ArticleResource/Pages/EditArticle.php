@@ -13,9 +13,29 @@ class EditArticle extends EditRecord
 
     protected function getHeaderActions(): array
     {
-        return [
+        $actions = [
             Actions\DeleteAction::make(),
         ];
+
+        // Allow authors to resubmit rejected articles
+        if (auth()->user()?->role === 'author' && $this->record->status === 'rejected') {
+            array_unshift($actions, Actions\Action::make('resubmit')
+                ->label('Resubmit for Approval')
+                ->icon('heroicon-o-arrow-path')
+                ->color('primary')
+                ->requiresConfirmation()
+                ->modalHeading('Resubmit Article')
+                ->modalDescription('Are you sure you want to resubmit this article for approval?')
+                ->action(function () {
+                    $this->record->update([
+                        'status' => 'pending',
+                        'rejection_reason' => null,
+                    ]);
+                    $this->redirect(static::getResource()::getUrl('edit', ['record' => $this->record]));
+                }));
+        }
+
+        return $actions;
     }
 
     public function getSubheading(): string|Htmlable|null

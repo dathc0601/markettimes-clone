@@ -25,6 +25,21 @@ class ArticleResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    public static function getNavigationBadge(): ?string
+    {
+        if (!in_array(auth()->user()?->role, ['admin', 'editor'])) {
+            return null;
+        }
+        $count = static::getModel()::where('status', 'pending')->count();
+        return $count > 0 ? (string) $count : null;
+    }
+
+    public static function getNavigationBadgeColor(): string|array|null
+    {
+        $count = static::getModel()::where('status', 'pending')->count();
+        return $count > 0 ? 'warning' : null;
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -155,7 +170,25 @@ class ArticleResource extends Resource
                             ->dehydrated(false)
                             ->label('View Count'),
                     ])
-                    ->columns(2),
+                    ->columns(2)
+                    ->visible(fn () => in_array(auth()->user()?->role, ['admin', 'editor'])),
+
+                Forms\Components\Section::make('Article Status')
+                    ->schema([
+                        Forms\Components\Placeholder::make('status_display')
+                            ->label('Status')
+                            ->content(fn ($record) => match($record?->status) {
+                                'pending' => 'Pending Approval',
+                                'approved' => 'Approved',
+                                'rejected' => 'Rejected',
+                                default => 'Draft',
+                            }),
+                        Forms\Components\Placeholder::make('rejection_reason_display')
+                            ->label('Rejection Reason')
+                            ->content(fn ($record) => $record?->rejection_reason)
+                            ->visible(fn ($record) => $record?->status === 'rejected'),
+                    ])
+                    ->visible(fn () => auth()->user()?->role === 'author'),
 
                 Forms\Components\Section::make('SEO')
                     ->schema([
@@ -209,15 +242,34 @@ class ArticleResource extends Resource
                     ->searchable()
                     ->toggleable(),
 
+                Tables\Columns\TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'draft' => 'gray',
+                        'pending' => 'warning',
+                        'approved' => 'success',
+                        'rejected' => 'danger',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'draft' => 'Draft',
+                        'pending' => 'Pending',
+                        'approved' => 'Approved',
+                        'rejected' => 'Rejected',
+                        default => $state,
+                    }),
+
                 Tables\Columns\IconColumn::make('is_published')
                     ->boolean()
                     ->sortable()
-                    ->label('Published'),
+                    ->label('Published')
+                    ->visible(fn () => in_array(auth()->user()?->role, ['admin', 'editor'])),
 
                 Tables\Columns\IconColumn::make('is_featured')
                     ->boolean()
                     ->sortable()
-                    ->label('Featured'),
+                    ->label('Featured')
+                    ->visible(fn () => in_array(auth()->user()?->role, ['admin', 'editor'])),
 
                 Tables\Columns\TextColumn::make('view_count')
                     ->numeric()
@@ -241,19 +293,30 @@ class ArticleResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'draft' => 'Draft',
+                        'pending' => 'Pending Approval',
+                        'approved' => 'Approved',
+                        'rejected' => 'Rejected',
+                    ])
+                    ->visible(fn () => in_array(auth()->user()?->role, ['admin', 'editor'])),
+
                 Tables\Filters\TernaryFilter::make('is_published')
                     ->label('Published')
                     ->boolean()
                     ->trueLabel('Published only')
                     ->falseLabel('Drafts only')
-                    ->native(false),
+                    ->native(false)
+                    ->visible(fn () => in_array(auth()->user()?->role, ['admin', 'editor'])),
 
                 Tables\Filters\TernaryFilter::make('is_featured')
                     ->label('Featured')
                     ->boolean()
                     ->trueLabel('Featured only')
                     ->falseLabel('Not featured')
-                    ->native(false),
+                    ->native(false)
+                    ->visible(fn () => in_array(auth()->user()?->role, ['admin', 'editor'])),
 
                 Tables\Filters\SelectFilter::make('category')
                     ->relationship('category', 'name')
@@ -263,11 +326,50 @@ class ArticleResource extends Resource
                 Tables\Filters\SelectFilter::make('author')
                     ->relationship('author', 'name')
                     ->searchable()
-                    ->preload(),
+                    ->preload()
+                    ->visible(fn () => in_array(auth()->user()?->role, ['admin', 'editor'])),
 
-                Tables\Filters\TrashedFilter::make(),
+                Tables\Filters\TrashedFilter::make()
+                    ->visible(fn () => in_array(auth()->user()?->role, ['admin', 'editor'])),
             ])
             ->actions([
+                Tables\Actions\Action::make('approve')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->modalHeading('Approve Article')
+                    ->modalDescription('Are you sure you want to approve this article? It will be published immediately.')
+                    ->action(function (Article $record) {
+                        $record->update([
+                            'status' => 'approved',
+                            'approved_by' => auth()->id(),
+                            'approved_at' => now(),
+                            'is_published' => true,
+                            'published_at' => $record->published_at ?? now(),
+                            'rejection_reason' => null,
+                        ]);
+                    })
+                    ->visible(fn (Article $record) => $record->status === 'pending' && in_array(auth()->user()?->role, ['admin', 'editor'])),
+
+                Tables\Actions\Action::make('reject')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('danger')
+                    ->form([
+                        Forms\Components\Textarea::make('rejection_reason')
+                            ->label('Rejection Reason')
+                            ->required()
+                            ->rows(3)
+                            ->placeholder('Explain why this article is being rejected...'),
+                    ])
+                    ->action(function (Article $record, array $data) {
+                        $record->update([
+                            'status' => 'rejected',
+                            'rejection_reason' => $data['rejection_reason'],
+                            'is_published' => false,
+                        ]);
+                    })
+                    ->visible(fn (Article $record) => $record->status === 'pending' && in_array(auth()->user()?->role, ['admin', 'editor'])),
+
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
