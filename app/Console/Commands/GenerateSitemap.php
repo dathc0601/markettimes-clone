@@ -19,7 +19,7 @@ class GenerateSitemap extends Command
     private const LANGUAGE = 'vi';
     private const MONTHS_HISTORY = 6;
     private const TIMEZONE = '+07:00';
-    private const GOOGLE_NEWS_DAYS = 2;
+    private const GOOGLE_NEWS_LIMIT = 200;
     private const LATEST_NEWS_DAYS = 30;
     private const PRIORITY_HOMEPAGE = 1.0;
     private const PRIORITY_FEATURED = 0.9;
@@ -112,9 +112,9 @@ class GenerateSitemap extends Command
         $this->info('Generating Google News sitemap...');
 
         $articles = Article::published()
-            ->where('published_at', '>=', now()->subDays(self::GOOGLE_NEWS_DAYS))
             ->with(['tags'])
             ->orderBy('published_at', 'desc')
+            ->limit(self::GOOGLE_NEWS_LIMIT)
             ->get();
 
         $xml = $this->buildGoogleNewsHeader();
