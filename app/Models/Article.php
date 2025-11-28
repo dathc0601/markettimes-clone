@@ -245,10 +245,11 @@ class Article extends Model
         $paths = $this->featured_image_paths;
 
         if (!$paths) {
+            $contentImage = $this->getFirstImageFromContent('medium');
             return [
                 'sources' => [],
                 'fallback' => [
-                    'src' => asset('images/placeholder.jpg'),
+                    'src' => $contentImage ?? asset('images/placeholder.jpg'),
                     'alt' => $this->title,
                 ],
             ];
