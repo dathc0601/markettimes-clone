@@ -182,7 +182,7 @@ class Article extends Model
      *
      * @return string|null
      */
-    protected function getFirstImageFromContent(): ?string
+    protected function getFirstImageFromContent(string $size = 'thumbnail'): ?string
     {
         if (empty($this->content)) {
             return null;
@@ -190,7 +190,12 @@ class Article extends Model
 
         // Use regex to find the first <img> tag's src attribute
         if (preg_match('/<img[^>]+src=["\']([^"\']+)["\']/', $this->content, $matches)) {
-            return $matches[1];
+            // By default, assume that the matched image URL is a medium-size image
+            $mediumImageUrl = $matches[1];
+
+            if (str_contains($mediumImageUrl, '_medium.')) {
+                return str_replace('_medium.', '_' . $size . '.', $mediumImageUrl);
+            }
         }
 
         return null;
