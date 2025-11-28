@@ -216,7 +216,7 @@ class ArticleResource extends Resource
                     ->disk('s3')
                     ->getStateUsing(function ($record) {
                         if (!$record->featured_image) {
-                            return null;
+                            return $record->getFirstImageFromContent('thumbnail');
                         }
                         // Handle both old (string) and new (JSON) formats
                         $paths = is_string($record->featured_image) ? json_decode($record->featured_image, true) : $record->featured_image;
