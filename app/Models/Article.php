@@ -232,7 +232,7 @@ class Article extends Model
         }
 
         // Fall back to first image in content
-        return $this->getFirstImageFromContent();
+        return $this->getFirstImageFromContent($size);
     }
 
     /**
