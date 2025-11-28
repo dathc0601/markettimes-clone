@@ -13,6 +13,11 @@ class CreateArticle extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
+        // Always set author_id if not present (for authors where field is hidden)
+        if (!isset($data['author_id']) || empty($data['author_id'])) {
+            $data['author_id'] = auth()->id();
+        }
+
         // Authors automatically submit for approval
         if (auth()->user()?->role === 'author') {
             $data['status'] = 'pending';
