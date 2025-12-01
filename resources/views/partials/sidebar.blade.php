@@ -46,7 +46,7 @@
                 <div class="mb-4 lg:mb-8">
                     <div class="bg-gray-200 rounded-lg p-8 text-center text-gray-500 aspect-5/2 lg:aspect-square flex justify-center items-center">
                         <div>
-                            <p class="text-sm">Quang cao</p>
+                            <p class="text-sm">Quảng cáo</p>
                         </div>
                     </div>
                 </div>
@@ -76,7 +76,7 @@
                 <div class="mb-4 lg:mb-8">
                     <div class="bg-gray-200 rounded-lg p-8 text-center text-gray-500 aspect-5/2 lg:aspect-square flex justify-center items-center">
                         <div>
-                            <p class="text-sm">Quang cao</p>
+                            <p class="text-sm">Quảng cáo</p>
                         </div>
                     </div>
                 </div>
@@ -106,7 +106,7 @@
                 <div class="mb-4 lg:mb-8">
                     <div class="bg-gray-200 rounded-lg p-8 text-center text-gray-500 aspect-5/2 lg:aspect-square flex justify-center items-center">
                         <div>
-                            <p class="text-sm">Quang cao</p>
+                            <p class="text-sm">Quảng cáo</p>
                         </div>
                     </div>
                 </div>
@@ -132,7 +132,7 @@
                     <div class="mb-4 lg:mb-8">
                         <div class="bg-gray-200 rounded-lg p-8 text-center text-gray-500 aspect-5/2 lg:aspect-square flex justify-center items-center">
                             <div>
-                                <p class="text-sm">Quang cao</p>
+                                <p class="text-sm">Quảng cáo</p>
                             </div>
                         </div>
                     </div>
@@ -161,7 +161,7 @@
         @if(($sectionConfig['sidebar_most_read']['enabled'] ?? true) && isset($mostRead) && $mostRead->count() > 0)
             <div class="mb-4 lg:mb-8">
                 <h3 class="text-lg font-bold text-gray-900 mb-4 pb-2 border-b-2 border-teal-600">
-                    {{ $sectionConfig['sidebar_most_read']['title'] ?? 'Doc nhieu' }}
+                    {{ $sectionConfig['sidebar_most_read']['title'] ?? 'Đọc nhiều' }}
                 </h3>
 
                 <div class="space-y-4">
@@ -197,7 +197,7 @@
             <div class="mb-4 lg:mb-8">
                 <div class="bg-gray-200 rounded-lg p-8 text-center text-gray-500 aspect-5/2 lg:aspect-square flex justify-center items-center">
                     <div>
-                        <p class="text-sm">Quang cao</p>
+                        <p class="text-sm">Quảng cáo</p>
                     </div>
                 </div>
             </div>
@@ -208,7 +208,7 @@
                         $valuationCategorySlug = $sectionConfig['sidebar_valuation']['source_config']['category_slug'] ?? 'tham-dinh-gia';
                     @endphp
                     <a href="{{ route('category.show', $valuationCategorySlug) }}" class="hover:text-teal-600 transition-colors">
-                        {{ $sectionConfig['sidebar_valuation']['title'] ?? 'Dien dan Tham dinh gia' }}
+                        {{ $sectionConfig['sidebar_valuation']['title'] ?? 'Tuyển chọn' }}
                     </a>
                 </h3>
 
@@ -229,7 +229,7 @@
             <div class="mb-4 lg:mb-8">
                 <div class="bg-gray-200 rounded-lg p-8 text-center text-gray-500 aspect-5/2 lg:aspect-square flex justify-center items-center">
                     <div>
-                        <p class="text-sm">Quang cao</p>
+                        <p class="text-sm">Quảng cáo</p>
                     </div>
                 </div>
             </div>
@@ -240,7 +240,7 @@
                         $businessCategorySlug = $sectionConfig['sidebar_business']['source_config']['category_slug'] ?? 'kinh-doanh';
                     @endphp
                     <a href="{{ route('category.show', $businessCategorySlug) }}" class="hover:text-teal-600 transition-colors">
-                        {{ $sectionConfig['sidebar_business']['title'] ?? 'Nhip cau doanh nghiep' }}
+                        {{ $sectionConfig['sidebar_business']['title'] ?? 'Doanh nghiệp' }}
                     </a>
                 </h3>
 
@@ -261,14 +261,14 @@
             <div class="mb-4 lg:mb-8">
                 <div class="bg-gray-200 rounded-lg p-8 text-center text-gray-500 aspect-5/2 lg:aspect-square flex justify-center items-center">
                     <div>
-                        <p class="text-sm">Quang cao</p>
+                        <p class="text-sm">Quảng cáo</p>
                     </div>
                 </div>
             </div>
 
             <div class="mb-4 lg:mb-8">
                 <h3 class="text-lg font-bold text-gray-900 mb-4 pb-2 border-b-2 border-teal-600">
-                    {{ $sectionConfig['sidebar_special']['title'] ?? 'Dac san' }}
+                    {{ $sectionConfig['sidebar_special']['title'] ?? 'Đặc biệt' }}
                 </h3>
 
                 <div class="space-y-4">
