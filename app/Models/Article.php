@@ -182,7 +182,7 @@ class Article extends Model
      *
      * @return string|null
      */
-    protected function getFirstImageFromContent(string $size = 'thumbnail'): ?string
+    public function getFirstImageFromContent(string $size = 'thumbnail'): ?string
     {
         if (empty($this->content)) {
             return null;
