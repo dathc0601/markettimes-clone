@@ -95,13 +95,20 @@ class ArticleResource extends Resource
                                 $paths = $imageService->processUpload($file, 'articles');
                                 return json_encode($paths);
                             })
-                            ->getUploadedFileUsing(function ($record) {
-                                if (!$record || !$record->featured_image) {
+                            ->getUploadedFileUsing(function (string $file): ?array {
+                                $pathData = json_decode($file, true);
+                                if (!is_array($pathData) || !isset($pathData['original'])) {
                                     return null;
                                 }
-                                // Get the original or thumbnail for display in Filament
-                                $paths = is_string($record->featured_image) ? json_decode($record->featured_image, true) : $record->featured_image;
-                                return $paths['original'] ?? $paths['thumbnail'] ?? null;
+
+                                $path = $pathData['original'];
+
+                                return [
+                                    'name' => basename($path),
+                                    'size' => Storage::disk('s3')->exists($path) ? Storage::disk('s3')->size($path) : 0,
+                                    'type' => 'image/jpeg',
+                                    'url' => Storage::disk('s3')->url($path),
+                                ];
                             })
                             ->columnSpanFull(),
 
