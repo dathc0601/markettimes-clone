@@ -62,7 +62,7 @@ class UserResource extends Resource
 
                         Forms\Components\FileUpload::make('avatar')
                             ->image()
-                            ->disk('public')
+                            ->disk('s3')
                             ->directory('avatars')
                             ->imageEditor()
                             ->avatar()
@@ -98,6 +98,7 @@ class UserResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('avatar')
+                    ->disk('s3')
                     ->circular()
                     ->defaultImageUrl(url('/images/default-avatar.png')),
 

@@ -87,7 +87,7 @@ class ArticleResource extends Resource
 
                         Forms\Components\FileUpload::make('featured_image')
                             ->image()
-                            ->disk('public')
+                            ->disk('s3')
                             ->directory('articles')
                             ->imageEditor()
                             ->saveUploadedFileUsing(function ($file) {
