@@ -16,7 +16,7 @@ class ImageService
         'large' => ['width' => 1200, 'height' => 800],
     ];
 
-    protected int $quality = 85;
+    protected int $quality = 90;
 
     public function __construct()
     {
@@ -39,10 +39,21 @@ class ImageService
         $extension = $file->getClientOriginalExtension();
 
         // Store original image
-        $originalPath = $file->storeAs("images/{$path}", "{$filename}.{$extension}", 'public');
+        $originalPath = $file->storeAs("images/{$path}", "{$filename}.{$extension}", 's3');
         $paths['original'] = $originalPath;
 
         // Load image with Intervention
+        $image = $this->manager->read($file->getRealPath());
+
+        // Generate WebP version of original BEFORE resizing (cover() modifies in place)
+        $originalWebpPath = "images/{$path}/{$filename}.webp";
+        Storage::disk('s3')->put(
+            $originalWebpPath,
+            $image->toWebp($this->quality)
+        );
+        $paths['original_webp'] = $originalWebpPath;
+
+        // Re-read image for resizing (since toWebp may affect the image state)
         $image = $this->manager->read($file->getRealPath());
 
         // Generate different sizes
@@ -66,14 +77,6 @@ class ImageService
             );
             $paths["{$sizeName}_webp"] = $webpPath;
         }
-
-        // Generate WebP version of original
-        $originalWebpPath = "images/{$path}/{$filename}.webp";
-        Storage::disk('s3')->put(
-            $originalWebpPath,
-            $image->toWebp($this->quality)
-        );
-        $paths['original_webp'] = $originalWebpPath;
 
         return $paths;
     }

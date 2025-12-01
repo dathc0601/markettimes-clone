@@ -138,10 +138,14 @@ class ArticleResource extends Resource
                                 return json_encode($paths);
                             })
                             ->getUploadedAttachmentUrlUsing(function ($file) {
-                                // Return the optimized medium-size image URL
+                                // Return the original WebP image URL (full quality, smaller file size)
                                 $pathData = json_decode($file, true);
-                                if (is_array($pathData) && isset($pathData['medium'])) {
-                                    return Storage::disk('s3')->url($pathData['medium']);
+                                if (is_array($pathData) && isset($pathData['original_webp'])) {
+                                    return Storage::disk('s3')->url($pathData['original_webp']);
+                                }
+                                // Fallback to original if WebP not available
+                                if (is_array($pathData) && isset($pathData['original'])) {
+                                    return Storage::disk('s3')->url($pathData['original']);
                                 }
                                 return Storage::disk('s3')->url($file);
                             })
