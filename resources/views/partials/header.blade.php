@@ -27,7 +27,7 @@
                 <div class="flex-shrink-0">
                     <a href="{{ route('home') }}" class="block">
                         @if(setting('site_logo'))
-                            <img src="{{ Storage::url(setting('site_logo')) }}" alt="{{ setting('site_name', config('app.name')) }}" class="c-logo">
+                            <img src="{{ Storage::disk('s3')->url(setting('site_logo')) }}" alt="{{ setting('site_name', config('app.name')) }}" class="c-logo">
                         @else
                             <img src="{{ asset('images/logo.svg') }}" alt="{{ setting('site_name', config('app.name')) }}" class="c-logo">
                         @endif
@@ -55,7 +55,7 @@
                 </button>
                 <a href="{{ route('home') }}">
                     @if(setting('site_logo'))
-                        <img src="{{ Storage::url(setting('site_logo')) }}" alt="{{ setting('site_name', config('app.name')) }}" class="c-logo">
+                        <img src="{{ Storage::disk('s3')->url(setting('site_logo')) }}" alt="{{ setting('site_name', config('app.name')) }}" class="c-logo">
                     @else
                         <img src="{{ asset('images/logo.svg') }}" alt="{{ setting('site_name', config('app.name')) }}" class="c-logo">
                     @endif

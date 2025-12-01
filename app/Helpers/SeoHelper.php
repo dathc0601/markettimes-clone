@@ -21,7 +21,7 @@ class SeoHelper
         $siteName = setting('site_name', config('app.name', 'Nhịp sống thị trường'));
         $defaultTitle = $defaults['title'] ?? setting('meta_title', $siteName);
         $defaultDescription = $defaults['description'] ?? setting('meta_description', 'Tin tức tài chính, kinh doanh, chứng khoán, bất động sản và phân tích thị trường.');
-        $defaultImage = $defaults['image'] ?? (setting('og_image') ? \Storage::url(setting('og_image')) : asset('images/default-og.jpg'));
+        $defaultImage = $defaults['image'] ?? (setting('og_image') ? \Storage::disk('s3')->url(setting('og_image')) : asset('images/default-og.jpg'));
         $defaultUrl = $defaults['url'] ?? url()->current();
 
         // If no model is provided, return defaults
@@ -81,8 +81,8 @@ class SeoHelper
     public static function generateArticleSchema(Article $article): string
     {
         $siteName = setting('site_name', config('app.name', 'Nhịp sống thị trường'));
-        $logoUrl = setting('site_logo') ? \Storage::url(setting('site_logo')) : asset('images/logo.png');
-        $defaultImage = setting('og_image') ? \Storage::url(setting('og_image')) : asset('images/default-og.jpg');
+        $logoUrl = setting('site_logo') ? \Storage::disk('s3')->url(setting('site_logo')) : asset('images/logo.png');
+        $defaultImage = setting('og_image') ? \Storage::disk('s3')->url(setting('og_image')) : asset('images/default-og.jpg');
 
         $schema = [
             '@context' => 'https://schema.org',

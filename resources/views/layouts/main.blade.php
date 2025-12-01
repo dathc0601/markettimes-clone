@@ -20,8 +20,8 @@
 
     <!-- Favicon -->
     @if(setting('site_favicon'))
-    <link rel="icon" type="image/x-icon" href="{{ Storage::url(setting('site_favicon')) }}">
-    <link rel="apple-touch-icon" href="{{ Storage::url(setting('site_favicon')) }}">
+    <link rel="icon" type="image/x-icon" href="{{ Storage::disk('s3')->url(setting('site_favicon')) }}">
+    <link rel="apple-touch-icon" href="{{ Storage::disk('s3')->url(setting('site_favicon')) }}">
     @endif
 
     <!-- SEO Meta Tags -->
