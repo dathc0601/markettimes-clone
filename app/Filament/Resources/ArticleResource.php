@@ -90,25 +90,20 @@ class ArticleResource extends Resource
                             ->disk('s3')
                             ->directory('articles')
                             ->imageEditor()
+                            ->afterStateHydrated(function (Forms\Components\FileUpload $component, $state) {
+                                if (!$state) {
+                                    return;
+                                }
+                                // If state is JSON, extract the original path
+                                $paths = is_string($state) ? json_decode($state, true) : $state;
+                                if (is_array($paths) && isset($paths['original'])) {
+                                    $component->state([$paths['original']]);
+                                }
+                            })
                             ->saveUploadedFileUsing(function ($file) {
                                 $imageService = app(ImageService::class);
                                 $paths = $imageService->processUpload($file, 'articles');
                                 return json_encode($paths);
-                            })
-                            ->getUploadedFileUsing(function (string $file): ?array {
-                                $pathData = json_decode($file, true);
-                                if (!is_array($pathData) || !isset($pathData['original'])) {
-                                    return null;
-                                }
-
-                                $path = $pathData['original'];
-
-                                return [
-                                    'name' => basename($path),
-                                    'size' => Storage::disk('s3')->exists($path) ? Storage::disk('s3')->size($path) : 0,
-                                    'type' => 'image/jpeg',
-                                    'url' => Storage::disk('s3')->url($path),
-                                ];
                             })
                             ->columnSpanFull(),
 
