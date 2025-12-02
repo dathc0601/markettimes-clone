@@ -242,8 +242,13 @@ class ArticleResource extends Resource
                                 ];
                             })
                             ->default(function ($record) {
-                                // If was approved, default to approved; otherwise pending
-                                return $record?->approved_at ? 'approved' : 'pending';
+                                // If there's no record (In creation mode), set default as `pending`
+                                if (!$record) {
+                                    return 'pending';
+                                } else {
+                                    // If was approved, default to `approved`; otherwise `pending`
+                                    return $record->approved_at ? 'approved' : 'pending';
+                                }
                             })
                             ->helperText(function ($record) {
                                 if ($record?->approved_at) {
