@@ -25,10 +25,10 @@ class StatsOverview extends BaseWidget
                 Stat::make('Chờ duyệt', Article::where('author_id', $user->id)->where('status', 'pending')->count())
                     ->description('Đang chờ phê duyệt')
                     ->descriptionIcon('heroicon-o-clock')
-                    ->color('warning'),
+                    ->color('danger'),
 
                 Stat::make('Hiển thị', Article::where('author_id', $user->id)->where('status', 'approved')->where('is_published', true)->count())
-                    ->description('Hiện đang xuất bản')
+                    ->description('Bài viết đã duyệt')
                     ->descriptionIcon('heroicon-o-check-circle')
                     ->color('primary'),
 
@@ -49,11 +49,11 @@ class StatsOverview extends BaseWidget
             Stat::make('Chờ duyệt', Article::where('status', 'pending')->count())
                 ->description('Bài viết chờ xem xét')
                 ->descriptionIcon('heroicon-o-clock')
-                ->color('warning')
+                ->color('danger')
                 ->url(route('filament.admin.resources.articles.index', ['tableFilters[status][value]' => 'pending'])),
 
             Stat::make('Hiển thị', Article::where('is_published', true)->where('status', 'approved')->count())
-                ->description('Hiện đang xuất bản')
+                ->description('Bài viết đã duyệt')
                 ->descriptionIcon('heroicon-o-check-circle')
                 ->color('primary'),
 
