@@ -74,8 +74,8 @@ class HomeController extends Controller
 
         $user = auth()->user();
 
-        // Must be admin or editor
-        if (!in_array($user->role, ['admin', 'editor'])) {
+        // Must be admin
+        if ($user->role !== 'admin') {
             return false;
         }
 

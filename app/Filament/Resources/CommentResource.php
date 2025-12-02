@@ -32,12 +32,30 @@ class CommentResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::where('is_approved', false)->count();
+        $query = static::getModel()::where('is_approved', false);
+
+        // Editor can only see comments on their own articles
+        if (auth()->user()?->role === 'editor') {
+            $query->whereHas('article', function ($q) {
+                $q->where('author_id', auth()->id());
+            });
+        }
+
+        return $query->count() ?: null;
     }
 
     public static function getNavigationBadgeColor(): string|array|null
     {
-        $count = static::getModel()::where('is_approved', false)->count();
+        $query = static::getModel()::where('is_approved', false);
+
+        // Editor can only see comments on their own articles
+        if (auth()->user()?->role === 'editor') {
+            $query->whereHas('article', function ($q) {
+                $q->where('author_id', auth()->id());
+            });
+        }
+
+        $count = $query->count();
         return $count > 0 ? 'warning' : null;
     }
 
@@ -199,10 +217,19 @@ class CommentResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()
+        $query = parent::getEloquentQuery()
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
+
+        // Editor can only see comments on their own articles
+        if (auth()->user()?->role === 'editor') {
+            $query->whereHas('article', function ($q) {
+                $q->where('author_id', auth()->id());
+            });
+        }
+
+        return $query;
     }
 
     public static function getPages(): array

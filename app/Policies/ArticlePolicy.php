@@ -14,11 +14,11 @@ class ArticlePolicy
 
     public function view(User $user, Article $article): bool
     {
-        if (in_array($user->role, ['admin', 'editor'])) {
+        if ($user->role === 'admin') {
             return true;
         }
 
-        return $user->role === 'author' && $article->author_id === $user->id;
+        return in_array($user->role, ['editor', 'author']) && $article->author_id === $user->id;
     }
 
     public function create(User $user): bool
@@ -28,20 +28,20 @@ class ArticlePolicy
 
     public function update(User $user, Article $article): bool
     {
-        if (in_array($user->role, ['admin', 'editor'])) {
+        if ($user->role === 'admin') {
             return true;
         }
 
-        return $user->role === 'author' && $article->author_id === $user->id;
+        return in_array($user->role, ['editor', 'author']) && $article->author_id === $user->id;
     }
 
     public function delete(User $user, Article $article): bool
     {
-        if (in_array($user->role, ['admin', 'editor'])) {
+        if ($user->role === 'admin') {
             return true;
         }
 
-        return $user->role === 'author' && $article->author_id === $user->id;
+        return in_array($user->role, ['editor', 'author']) && $article->author_id === $user->id;
     }
 
     public function deleteAny(User $user): bool
@@ -51,26 +51,26 @@ class ArticlePolicy
 
     public function forceDelete(User $user, Article $article): bool
     {
-        return in_array($user->role, ['admin', 'editor']);
+        return $user->role === 'admin';
     }
 
     public function forceDeleteAny(User $user): bool
     {
-        return in_array($user->role, ['admin', 'editor']);
+        return $user->role === 'admin';
     }
 
     public function restore(User $user, Article $article): bool
     {
-        return in_array($user->role, ['admin', 'editor']);
+        return $user->role === 'admin';
     }
 
     public function restoreAny(User $user): bool
     {
-        return in_array($user->role, ['admin', 'editor']);
+        return $user->role === 'admin';
     }
 
     public function reorder(User $user): bool
     {
-        return in_array($user->role, ['admin', 'editor']);
+        return $user->role === 'admin';
     }
 }

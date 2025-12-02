@@ -14,8 +14,8 @@ class StatsOverview extends BaseWidget
     {
         $user = auth()->user();
 
-        // Authors see only their own stats
-        if ($user?->role === 'author') {
+        // Authors and Editors see only their own stats
+        if (in_array($user?->role, ['editor', 'author'])) {
             return [
                 Stat::make('My Articles', Article::where('author_id', $user->id)->count())
                     ->description('Total articles you wrote')
@@ -39,7 +39,7 @@ class StatsOverview extends BaseWidget
             ];
         }
 
-        // Admin/Editor see global stats
+        // Admin sees global stats
         return [
             Stat::make('Total Articles', Article::count())
                 ->description('All articles in the system')

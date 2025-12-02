@@ -26,7 +26,7 @@ class NavigationItemResource extends Resource
 
     public static function canAccess(): bool
     {
-        return in_array(auth()->user()?->role, ['admin', 'editor']);
+        return auth()->user()?->role === 'admin';
     }
 
     public static function form(Form $form): Form

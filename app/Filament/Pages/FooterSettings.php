@@ -22,7 +22,7 @@ class FooterSettings extends Page implements Forms\Contracts\HasForms
 
     public static function canAccess(): bool
     {
-        return in_array(auth()->user()?->role, ['admin', 'editor']);
+        return auth()->user()?->role === 'admin';
     }
 
     public ?array $data = [];

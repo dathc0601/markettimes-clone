@@ -27,7 +27,7 @@ class ArticleResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        if (!in_array(auth()->user()?->role, ['admin', 'editor'])) {
+        if (auth()->user()?->role !== 'admin') {
             return null;
         }
         $count = static::getModel()::where('status', 'pending')->count();
@@ -71,7 +71,7 @@ class ArticleResource extends Resource
                             ->default(auth()->id())
                             ->searchable()
                             ->preload()
-                            ->hidden(fn () => auth()->user()?->role === 'author')
+                            ->hidden(fn () => in_array(auth()->user()?->role, ['editor', 'author']))
                             ->dehydrated(),
 
                         Forms\Components\Select::make('tags')
@@ -168,7 +168,7 @@ class ArticleResource extends Resource
 
                         Forms\Components\Toggle::make('is_published')
                             ->label('Published')
-                            ->default(false),
+                            ->default(fn () => in_array(auth()->user()?->role, ['admin', 'editor'])),
 
                         Forms\Components\Toggle::make('is_featured')
                             ->label('Featured Article')
@@ -268,7 +268,8 @@ class ArticleResource extends Resource
                         'approved' => 'Approved',
                         'rejected' => 'Rejected',
                         default => $state,
-                    }),
+                    })
+                    ->visible(fn () => auth()->user()?->role === 'admin'),
 
                 Tables\Columns\IconColumn::make('is_published')
                     ->boolean()
@@ -311,7 +312,7 @@ class ArticleResource extends Resource
                         'approved' => 'Approved',
                         'rejected' => 'Rejected',
                     ])
-                    ->visible(fn () => in_array(auth()->user()?->role, ['admin', 'editor'])),
+                    ->visible(fn () => auth()->user()?->role === 'admin'),
 
                 Tables\Filters\TernaryFilter::make('is_published')
                     ->label('Published')
@@ -319,7 +320,7 @@ class ArticleResource extends Resource
                     ->trueLabel('Published only')
                     ->falseLabel('Drafts only')
                     ->native(false)
-                    ->visible(fn () => in_array(auth()->user()?->role, ['admin', 'editor'])),
+                    ->visible(fn () => auth()->user()?->role === 'admin'),
 
                 Tables\Filters\TernaryFilter::make('is_featured')
                     ->label('Featured')
@@ -327,7 +328,7 @@ class ArticleResource extends Resource
                     ->trueLabel('Featured only')
                     ->falseLabel('Not featured')
                     ->native(false)
-                    ->visible(fn () => in_array(auth()->user()?->role, ['admin', 'editor'])),
+                    ->visible(fn () => auth()->user()?->role === 'admin'),
 
                 Tables\Filters\SelectFilter::make('category')
                     ->relationship('category', 'name')
@@ -338,10 +339,10 @@ class ArticleResource extends Resource
                     ->relationship('author', 'name')
                     ->searchable()
                     ->preload()
-                    ->visible(fn () => in_array(auth()->user()?->role, ['admin', 'editor'])),
+                    ->visible(fn () => auth()->user()?->role === 'admin'),
 
                 Tables\Filters\TrashedFilter::make()
-                    ->visible(fn () => in_array(auth()->user()?->role, ['admin', 'editor'])),
+                    ->visible(fn () => auth()->user()?->role === 'admin'),
             ])
             ->actions([
                 Tables\Actions\Action::make('approve')
@@ -360,7 +361,7 @@ class ArticleResource extends Resource
                             'rejection_reason' => null,
                         ]);
                     })
-                    ->visible(fn (Article $record) => $record->status === 'pending' && in_array(auth()->user()?->role, ['admin', 'editor'])),
+                    ->visible(fn (Article $record) => $record->status === 'pending' && auth()->user()?->role === 'admin'),
 
                 Tables\Actions\Action::make('reject')
                     ->icon('heroicon-o-x-circle')
@@ -379,7 +380,7 @@ class ArticleResource extends Resource
                             'is_published' => false,
                         ]);
                     })
-                    ->visible(fn (Article $record) => $record->status === 'pending' && in_array(auth()->user()?->role, ['admin', 'editor'])),
+                    ->visible(fn (Article $record) => $record->status === 'pending' && auth()->user()?->role === 'admin'),
 
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
@@ -408,15 +409,15 @@ class ArticleResource extends Resource
     {
         $query = parent::getEloquentQuery();
 
-        // Only admins/editors can see trashed articles (they have TrashedFilter)
-        if (in_array(auth()->user()?->role, ['admin', 'editor'])) {
+        // Only admin can see trashed articles
+        if (auth()->user()?->role === 'admin') {
             $query->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
         }
 
-        // Authors can only see their own articles
-        if (auth()->user()?->role === 'author') {
+        // Editors and authors can only see their own articles
+        if (in_array(auth()->user()?->role, ['editor', 'author'])) {
             $query->where('author_id', auth()->id());
         }
 
