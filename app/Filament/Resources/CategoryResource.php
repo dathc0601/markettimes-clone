@@ -19,7 +19,13 @@ class CategoryResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-folder';
 
-    protected static ?string $navigationGroup = 'Content';
+    protected static ?string $navigationGroup = 'Nội dung';
+
+    protected static ?string $navigationLabel = 'Danh mục';
+
+    protected static ?string $modelLabel = 'Danh mục';
+
+    protected static ?string $pluralModelLabel = 'Danh mục';
 
     protected static ?int $navigationSort = 2;
 
@@ -32,15 +38,17 @@ class CategoryResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Category Information')
+                Forms\Components\Section::make('Thông tin danh mục')
                     ->schema([
                         Forms\Components\TextInput::make('name')
+                            ->label('Tên')
                             ->required()
                             ->maxLength(255)
                             ->live(onBlur: true)
                             ->afterStateUpdated(fn (string $operation, $state, Forms\Set $set) => $operation === 'create' ? $set('slug', \Illuminate\Support\Str::slug($state)) : null),
 
                         Forms\Components\TextInput::make('slug')
+                            ->label('Đường dẫn')
                             ->required()
                             ->maxLength(255)
                             ->disabled()
@@ -48,26 +56,27 @@ class CategoryResource extends Resource
                             ->unique(Category::class, 'slug', ignoreRecord: true),
 
                         Forms\Components\Textarea::make('description')
+                            ->label('Mô tả')
                             ->rows(3)
                             ->columnSpanFull(),
 
                         Forms\Components\Select::make('parent_id')
-                            ->label('Parent Category')
+                            ->label('Danh mục cha')
                             ->relationship('parent', 'name')
                             ->searchable()
                             ->preload()
                             ->nullable()
-                            ->helperText('Leave empty for top-level category'),
+                            ->helperText('Để trống cho danh mục cấp cao nhất'),
 
                         Forms\Components\TextInput::make('order')
-                            ->label('Display Order')
+                            ->label('Thứ tự hiển thị')
                             ->numeric()
                             ->default(0)
                             ->required()
-                            ->helperText('Lower numbers appear first'),
+                            ->helperText('Số nhỏ hơn hiển thị trước'),
 
                         Forms\Components\Toggle::make('is_active')
-                            ->label('Active')
+                            ->label('Kích hoạt')
                             ->default(true)
                             ->required(),
                     ])
@@ -80,18 +89,20 @@ class CategoryResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Tên')
                     ->searchable()
                     ->sortable()
                     ->weight('bold'),
 
                 Tables\Columns\TextColumn::make('slug')
+                    ->label('Đường dẫn')
                     ->searchable()
                     ->sortable()
                     ->color('gray')
                     ->copyable(),
 
                 Tables\Columns\TextColumn::make('parent.name')
-                    ->label('Parent')
+                    ->label('Danh mục cha')
                     ->sortable()
                     ->searchable()
                     ->badge()
@@ -100,7 +111,7 @@ class CategoryResource extends Resource
 
                 Tables\Columns\TextColumn::make('articles_count')
                     ->counts('articles')
-                    ->label('Articles')
+                    ->label('Bài viết')
                     ->sortable()
                     ->badge()
                     ->color('success'),
@@ -108,45 +119,51 @@ class CategoryResource extends Resource
                 Tables\Columns\TextColumn::make('order')
                     ->numeric()
                     ->sortable()
-                    ->label('Order'),
+                    ->label('Thứ tự'),
 
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean()
                     ->sortable()
-                    ->label('Active'),
+                    ->label('Kích hoạt'),
 
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Ngày tạo')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Ngày cập nhật')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Active')
+                    ->label('Kích hoạt')
                     ->boolean()
-                    ->trueLabel('Active only')
-                    ->falseLabel('Inactive only')
+                    ->trueLabel('Đang kích hoạt')
+                    ->falseLabel('Chưa kích hoạt')
                     ->native(false),
 
                 Tables\Filters\SelectFilter::make('parent_id')
-                    ->label('Parent Category')
+                    ->label('Danh mục cha')
                     ->relationship('parent', 'name')
                     ->searchable()
                     ->preload(),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->label('Xem'),
+                Tables\Actions\EditAction::make()
+                    ->label('Sửa'),
+                Tables\Actions\DeleteAction::make()
+                    ->label('Xóa'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->label('Xóa'),
                 ]),
             ])
             ->defaultSort('order', 'asc')

@@ -17,7 +17,7 @@ class HomepageManagement extends Page implements Forms\Contracts\HasForms
 
     protected static ?string $navigationIcon = 'heroicon-o-home';
     protected static string $view = 'filament.pages.homepage-management';
-    protected static ?string $navigationGroup = 'Management';
+    protected static ?string $navigationGroup = 'Quản lý';
     protected static ?int $navigationSort = 5;
     protected static ?string $title = 'Quản lý Trang chủ';
     protected static ?string $navigationLabel = 'Trang chủ';
@@ -465,7 +465,7 @@ class HomepageManagement extends Page implements Forms\Contracts\HasForms
 
         Notification::make()
             ->success()
-            ->title('Đã xuất bản')
+            ->title('Hiển thị')
             ->body('Cấu hình trang chủ đã được cập nhật và đang hiển thị trên website.')
             ->send();
     }

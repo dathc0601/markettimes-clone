@@ -19,7 +19,13 @@ class PageResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
-    protected static ?string $navigationGroup = 'Content';
+    protected static ?string $navigationGroup = 'Nội dung';
+
+    protected static ?string $navigationLabel = 'Trang';
+
+    protected static ?string $modelLabel = 'Trang';
+
+    protected static ?string $pluralModelLabel = 'Trang';
 
     protected static ?int $navigationSort = 5;
 
@@ -32,15 +38,17 @@ class PageResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Page Information')
+                Forms\Components\Section::make('Thông tin trang')
                     ->schema([
                         Forms\Components\TextInput::make('title')
+                            ->label('Tiêu đề')
                             ->required()
                             ->maxLength(255)
                             ->live(onBlur: true)
                             ->afterStateUpdated(fn (string $operation, $state, Forms\Set $set) => $operation === 'create' ? $set('slug', \Illuminate\Support\Str::slug($state)) : null),
 
                         Forms\Components\TextInput::make('slug')
+                            ->label('Đường dẫn')
                             ->required()
                             ->maxLength(255)
                             ->disabled()
@@ -48,11 +56,12 @@ class PageResource extends Resource
                             ->unique(Page::class, 'slug', ignoreRecord: true),
 
                         Forms\Components\Toggle::make('is_published')
-                            ->label('Published')
+                            ->label('Hiển thị')
                             ->default(false)
                             ->required(),
 
                         Forms\Components\RichEditor::make('content')
+                            ->label('Nội dung')
                             ->required()
                             ->toolbarButtons([
                                 'bold',
@@ -76,11 +85,11 @@ class PageResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('meta_title')
                             ->maxLength(255)
-                            ->label('Meta Title'),
+                            ->label('Tiêu đề Meta'),
 
                         Forms\Components\Textarea::make('meta_description')
                             ->rows(3)
-                            ->label('Meta Description')
+                            ->label('Mô tả Meta')
                             ->columnSpanFull(),
                     ])
                     ->columns(2)
@@ -93,11 +102,13 @@ class PageResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')
+                    ->label('Tiêu đề')
                     ->searchable()
                     ->sortable()
                     ->weight('bold'),
 
                 Tables\Columns\TextColumn::make('slug')
+                    ->label('Đường dẫn')
                     ->searchable()
                     ->sortable()
                     ->color('gray')
@@ -106,36 +117,40 @@ class PageResource extends Resource
                 Tables\Columns\IconColumn::make('is_published')
                     ->boolean()
                     ->sortable()
-                    ->label('Published'),
+                    ->label('Xuất bản'),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->since()
-                    ->label('Created'),
+                    ->label('Ngày tạo'),
 
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->since()
-                    ->label('Updated'),
+                    ->label('Ngày cập nhật'),
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_published')
-                    ->label('Published')
+                    ->label('Xuất bản')
                     ->boolean()
-                    ->trueLabel('Published only')
-                    ->falseLabel('Drafts only')
+                    ->trueLabel('Hiển thị')
+                    ->falseLabel('Bản nháp')
                     ->native(false),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->label('Xem'),
+                Tables\Actions\EditAction::make()
+                    ->label('Sửa'),
+                Tables\Actions\DeleteAction::make()
+                    ->label('Xóa'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->label('Xóa'),
                 ]),
             ])
             ->defaultSort('updated_at', 'desc');

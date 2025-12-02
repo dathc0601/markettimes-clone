@@ -27,7 +27,7 @@ class LatestArticles extends BaseWidget
             ->columns([
                 Tables\Columns\ImageColumn::make('featured_image')
                     ->square()
-                    ->label('Image')
+                    ->label('Ảnh')
                     ->disk('s3')
                     ->getStateUsing(function ($record) {
                         if (!$record->featured_image) {
@@ -42,35 +42,39 @@ class LatestArticles extends BaseWidget
                     }),
 
                 Tables\Columns\TextColumn::make('title')
+                    ->label('Tiêu đề')
                     ->searchable()
                     ->limit(50)
                     ->weight('bold'),
 
                 Tables\Columns\TextColumn::make('category.name')
+                    ->label('Danh mục')
                     ->badge()
                     ->color('success'),
 
                 Tables\Columns\TextColumn::make('author.name')
+                    ->label('Tác giả')
                     ->badge()
                     ->color('info')
                     ->visible(fn () => !in_array(auth()->user()?->role, ['editor', 'author'])),
 
                 Tables\Columns\IconColumn::make('is_published')
                     ->boolean()
-                    ->label('Published'),
+                    ->label('Xuất bản'),
 
                 Tables\Columns\TextColumn::make('view_count')
                     ->numeric()
-                    ->label('Views'),
+                    ->label('Lượt xem'),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->since()
-                    ->label('Created'),
+                    ->label('Ngày tạo'),
             ])
-            ->heading(in_array(auth()->user()?->role, ['editor', 'author']) ? 'My Latest Articles' : 'Latest Articles')
+            ->heading(in_array(auth()->user()?->role, ['editor', 'author']) ? 'Bài viết mới nhất của tôi' : 'Bài viết mới nhất')
             ->actions([
                 Tables\Actions\Action::make('view')
+                    ->label('Xem')
                     ->url(fn (Article $record): string => route('filament.admin.resources.articles.edit', $record))
                     ->icon('heroicon-o-eye'),
             ]);

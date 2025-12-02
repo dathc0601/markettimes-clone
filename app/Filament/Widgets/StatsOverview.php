@@ -17,23 +17,23 @@ class StatsOverview extends BaseWidget
         // Authors and Editors see only their own stats
         if (in_array($user?->role, ['editor', 'author'])) {
             return [
-                Stat::make('My Articles', Article::where('author_id', $user->id)->count())
-                    ->description('Total articles you wrote')
+                Stat::make('Bài viết của tôi', Article::where('author_id', $user->id)->count())
+                    ->description('Tổng số bài viết bạn đã viết')
                     ->descriptionIcon('heroicon-o-newspaper')
                     ->color('success'),
 
-                Stat::make('Pending', Article::where('author_id', $user->id)->where('status', 'pending')->count())
-                    ->description('Awaiting approval')
+                Stat::make('Chờ duyệt', Article::where('author_id', $user->id)->where('status', 'pending')->count())
+                    ->description('Đang chờ phê duyệt')
                     ->descriptionIcon('heroicon-o-clock')
                     ->color('warning'),
 
-                Stat::make('Published', Article::where('author_id', $user->id)->where('status', 'approved')->where('is_published', true)->count())
-                    ->description('Currently published')
+                Stat::make('Hiển thị', Article::where('author_id', $user->id)->where('status', 'approved')->where('is_published', true)->count())
+                    ->description('Hiện đang xuất bản')
                     ->descriptionIcon('heroicon-o-check-circle')
                     ->color('primary'),
 
-                Stat::make('Total Views', Article::where('author_id', $user->id)->sum('view_count'))
-                    ->description('Total view count')
+                Stat::make('Tổng lượt xem', Article::where('author_id', $user->id)->sum('view_count'))
+                    ->description('Tổng số lượt xem')
                     ->descriptionIcon('heroicon-o-eye')
                     ->color('info'),
             ];
@@ -41,24 +41,24 @@ class StatsOverview extends BaseWidget
 
         // Admin sees global stats
         return [
-            Stat::make('Total Articles', Article::count())
-                ->description('All articles in the system')
+            Stat::make('Tổng bài viết', Article::count())
+                ->description('Tất cả bài viết trong hệ thống')
                 ->descriptionIcon('heroicon-o-newspaper')
                 ->color('success'),
 
-            Stat::make('Pending Approval', Article::where('status', 'pending')->count())
-                ->description('Articles awaiting review')
+            Stat::make('Chờ duyệt', Article::where('status', 'pending')->count())
+                ->description('Bài viết chờ xem xét')
                 ->descriptionIcon('heroicon-o-clock')
                 ->color('warning')
                 ->url(route('filament.admin.resources.articles.index', ['tableFilters[status][value]' => 'pending'])),
 
-            Stat::make('Published Articles', Article::where('is_published', true)->where('status', 'approved')->count())
-                ->description('Currently published')
+            Stat::make('Hiển thị', Article::where('is_published', true)->where('status', 'approved')->count())
+                ->description('Hiện đang xuất bản')
                 ->descriptionIcon('heroicon-o-check-circle')
                 ->color('primary'),
 
-            Stat::make('Pending Comments', Comment::where('is_approved', false)->count())
-                ->description('Awaiting moderation')
+            Stat::make('Bình luận chờ duyệt', Comment::where('is_approved', false)->count())
+                ->description('Chờ kiểm duyệt')
                 ->descriptionIcon('heroicon-o-clock')
                 ->color('gray')
                 ->url(route('filament.admin.resources.comments.index')),

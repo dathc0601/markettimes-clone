@@ -19,7 +19,13 @@ class TagResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-tag';
 
-    protected static ?string $navigationGroup = 'Content';
+    protected static ?string $navigationGroup = 'Nội dung';
+
+    protected static ?string $navigationLabel = 'Thẻ';
+
+    protected static ?string $modelLabel = 'Thẻ';
+
+    protected static ?string $pluralModelLabel = 'Thẻ';
 
     protected static ?int $navigationSort = 3;
 
@@ -33,12 +39,14 @@ class TagResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->label('Tên')
                     ->required()
                     ->maxLength(255)
                     ->live(onBlur: true)
                     ->afterStateUpdated(fn (string $operation, $state, Forms\Set $set) => $operation === 'create' ? $set('slug', \Illuminate\Support\Str::slug($state)) : null),
 
                 Forms\Components\TextInput::make('slug')
+                    ->label('Đường dẫn')
                     ->required()
                     ->maxLength(255)
                     ->disabled()
@@ -52,11 +60,13 @@ class TagResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Tên')
                     ->searchable()
                     ->sortable()
                     ->weight('bold'),
 
                 Tables\Columns\TextColumn::make('slug')
+                    ->label('Đường dẫn')
                     ->searchable()
                     ->sortable()
                     ->color('gray')
@@ -64,17 +74,19 @@ class TagResource extends Resource
 
                 Tables\Columns\TextColumn::make('articles_count')
                     ->counts('articles')
-                    ->label('Articles')
+                    ->label('Bài viết')
                     ->sortable()
                     ->badge()
                     ->color('success'),
 
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Ngày tạo')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Ngày cập nhật')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -83,13 +95,17 @@ class TagResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->label('Xem'),
+                Tables\Actions\EditAction::make()
+                    ->label('Sửa'),
+                Tables\Actions\DeleteAction::make()
+                    ->label('Xóa'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->label('Xóa'),
                 ]),
             ])
             ->defaultSort('name', 'asc');

@@ -18,11 +18,11 @@ class NavigationItemResource extends Resource
     protected static ?string $model = NavigationItem::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-bars-3';
-    protected static ?string $navigationGroup = 'Management';
+    protected static ?string $navigationGroup = 'Quản lý';
     protected static ?int $navigationSort = 11;
-    protected static ?string $navigationLabel = 'Navigation';
-    protected static ?string $modelLabel = 'Navigation Item';
-    protected static ?string $pluralModelLabel = 'Navigation Items';
+    protected static ?string $navigationLabel = 'Menu điều hướng';
+    protected static ?string $modelLabel = 'Menu điều hướng';
+    protected static ?string $pluralModelLabel = 'Menu điều hướng';
 
     public static function canAccess(): bool
     {
@@ -141,15 +141,15 @@ class NavigationItemResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('label')
-                    ->label('Label')
+                    ->label('Nhãn')
                     ->searchable()
                     ->sortable()
                     ->description(fn (NavigationItem $record): ?string =>
-                        $record->parent ? "↳ Child of: {$record->parent->label}" : null
+                        $record->parent ? "↳ Con của: {$record->parent->label}" : null
                     ),
 
                 Tables\Columns\BadgeColumn::make('type')
-                    ->label('Type')
+                    ->label('Loại')
                     ->colors([
                         'primary' => 'category',
                         'success' => 'page',
@@ -163,10 +163,10 @@ class NavigationItemResource extends Resource
                         'heroicon-o-minus' => 'divider',
                     ])
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'category' => 'Category',
-                        'page' => 'Page',
-                        'custom' => 'Custom',
-                        'divider' => 'Divider',
+                        'category' => 'Danh mục',
+                        'page' => 'Trang',
+                        'custom' => 'Tùy chỉnh',
+                        'divider' => 'Phân cách',
                     }),
 
                 Tables\Columns\TextColumn::make('url_preview')
@@ -192,17 +192,17 @@ class NavigationItemResource extends Resource
                     }),
 
                 Tables\Columns\TextColumn::make('parent.label')
-                    ->label('Parent')
-                    ->placeholder('Top Level')
+                    ->label('Menu cha')
+                    ->placeholder('Cấp cao nhất')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('order')
-                    ->label('Order')
+                    ->label('Thứ tự')
                     ->sortable()
                     ->alignCenter(),
 
                 Tables\Columns\IconColumn::make('is_active')
-                    ->label('Active')
+                    ->label('Kích hoạt')
                     ->boolean()
                     ->sortable(),
             ])
@@ -210,25 +210,25 @@ class NavigationItemResource extends Resource
             ->reorderable('order') // Enable drag-drop reordering
             ->filters([
                 Tables\Filters\SelectFilter::make('type')
-                    ->label('Type')
+                    ->label('Loại')
                     ->options([
-                        'category' => 'Category',
-                        'page' => 'Page',
-                        'custom' => 'Custom',
-                        'divider' => 'Divider',
+                        'category' => 'Danh mục',
+                        'page' => 'Trang',
+                        'custom' => 'Tùy chỉnh',
+                        'divider' => 'Phân cách',
                     ]),
 
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Status')
-                    ->placeholder('All items')
-                    ->trueLabel('Active only')
-                    ->falseLabel('Inactive only'),
+                    ->label('Trạng thái')
+                    ->placeholder('Tất cả')
+                    ->trueLabel('Đang kích hoạt')
+                    ->falseLabel('Chưa kích hoạt'),
 
                 Tables\Filters\SelectFilter::make('parent_id')
-                    ->label('Level')
+                    ->label('Cấp độ')
                     ->options([
-                        'null' => 'Top Level',
-                        'not_null' => 'Child Items',
+                        'null' => 'Cấp cao nhất',
+                        'not_null' => 'Menu con',
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return match ($data['value']) {
@@ -239,25 +239,29 @@ class NavigationItemResource extends Resource
                     }),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->label('Sửa'),
+                Tables\Actions\DeleteAction::make()
+                    ->label('Xóa'),
                 Tables\Actions\ReplicateAction::make()
+                    ->label('Nhân bản')
                     ->excludeAttributes(['order'])
                     ->beforeReplicaSaved(function (NavigationItem $replica): void {
-                        $replica->label = $replica->label . ' (Copy)';
+                        $replica->label = $replica->label . ' (Bản sao)';
                         $replica->order = NavigationItem::max('order') + 1;
                     }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->label('Xóa'),
                     Tables\Actions\BulkAction::make('activate')
-                        ->label('Activate')
+                        ->label('Kích hoạt')
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
                         ->action(fn ($records) => $records->each->update(['is_active' => true])),
                     Tables\Actions\BulkAction::make('deactivate')
-                        ->label('Deactivate')
+                        ->label('Vô hiệu hóa')
                         ->icon('heroicon-o-x-circle')
                         ->color('danger')
                         ->action(fn ($records) => $records->each->update(['is_active' => false])),

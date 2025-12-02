@@ -14,7 +14,7 @@ class Settings extends Page implements Forms\Contracts\HasForms
 
     protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
     protected static string $view = 'filament.pages.settings';
-    protected static ?string $navigationGroup = 'Management';
+    protected static ?string $navigationGroup = 'Quản lý';
     protected static ?int $navigationSort = 10;
     protected static ?string $title = 'Cài đặt chung';
     protected static ?string $navigationLabel = 'Cài đặt chung';
@@ -90,7 +90,7 @@ class Settings extends Page implements Forms\Contracts\HasForms
                             ]),
 
                         // SEO & Meta Tab
-                        Forms\Components\Tabs\Tab::make('SEO & Meta Tags')
+                        Forms\Components\Tabs\Tab::make('SEO & Thẻ Meta')
                             ->icon('heroicon-o-magnifying-glass')
                             ->schema([
                                 Forms\Components\Section::make('Meta Tags mặc định')
@@ -130,7 +130,7 @@ class Settings extends Page implements Forms\Contracts\HasForms
                         Forms\Components\Tabs\Tab::make('Mạng xã hội')
                             ->icon('heroicon-o-share')
                             ->schema([
-                                Forms\Components\Section::make('Social Media Links')
+                                Forms\Components\Section::make('Liên kết mạng xã hội')
                                     ->schema([
                                         Forms\Components\TextInput::make('facebook_url')
                                             ->label('Facebook URL')
@@ -164,7 +164,7 @@ class Settings extends Page implements Forms\Contracts\HasForms
                                     ])
                                     ->columns(2),
 
-                                Forms\Components\Section::make('Open Graph Settings')
+                                Forms\Components\Section::make('Cài đặt Open Graph')
                                     ->schema([
                                         Forms\Components\TextInput::make('og_title')
                                             ->label('OG Title (mặc định)')
@@ -184,7 +184,7 @@ class Settings extends Page implements Forms\Contracts\HasForms
                         Forms\Components\Tabs\Tab::make('Logo & Hình ảnh')
                             ->icon('heroicon-o-photo')
                             ->schema([
-                                Forms\Components\Section::make('Logo & Icons')
+                                Forms\Components\Section::make('Logo & Biểu tượng')
                                     ->schema([
                                         Forms\Components\FileUpload::make('site_logo')
                                             ->label('Logo website')
@@ -223,7 +223,7 @@ class Settings extends Page implements Forms\Contracts\HasForms
                         Forms\Components\Tabs\Tab::make('Thống kê & Tracking')
                             ->icon('heroicon-o-chart-bar')
                             ->schema([
-                                Forms\Components\Section::make('Analytics & Tracking Codes')
+                                Forms\Components\Section::make('Mã theo dõi & Phân tích')
                                     ->schema([
                                         Forms\Components\TextInput::make('google_analytics_id')
                                             ->label('Google Analytics ID')

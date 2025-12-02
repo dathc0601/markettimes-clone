@@ -19,7 +19,13 @@ class UserResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
-    protected static ?string $navigationGroup = 'Management';
+    protected static ?string $navigationGroup = 'Quản lý';
+
+    protected static ?string $navigationLabel = 'Người dùng';
+
+    protected static ?string $modelLabel = 'Người dùng';
+
+    protected static ?string $pluralModelLabel = 'Người dùng';
 
     protected static ?int $navigationSort = 1;
 
@@ -32,35 +38,39 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('User Information')
+                Forms\Components\Section::make('Thông tin người dùng')
                     ->schema([
                         Forms\Components\TextInput::make('name')
+                            ->label('Tên')
                             ->required()
                             ->maxLength(255),
 
                         Forms\Components\TextInput::make('email')
+                            ->label('Email')
                             ->email()
                             ->required()
                             ->maxLength(255)
                             ->unique(User::class, 'email', ignoreRecord: true),
 
                         Forms\Components\Select::make('role')
+                            ->label('Vai trò')
                             ->options([
-                                'admin' => 'Admin',
-                                'editor' => 'Editor',
-                                'author' => 'Author',
-                                'user' => 'User',
+                                'admin' => 'Quản trị viên',
+                                'editor' => 'Biên tập viên',
+                                'author' => 'Tác giả',
+                                'user' => 'Người dùng',
                             ])
                             ->required()
                             ->default('user')
                             ->native(false),
 
                         Forms\Components\Toggle::make('is_active')
-                            ->label('Active')
+                            ->label('Kích hoạt')
                             ->default(true)
                             ->required(),
 
                         Forms\Components\FileUpload::make('avatar')
+                            ->label('Ảnh đại diện')
                             ->image()
                             ->disk('s3')
                             ->directory('avatars')
@@ -70,23 +80,24 @@ class UserResource extends Resource
 
                         Forms\Components\Textarea::make('bio')
                             ->rows(3)
-                            ->label('Biography')
+                            ->label('Tiểu sử')
                             ->columnSpanFull(),
                     ])
                     ->columns(2),
 
-                Forms\Components\Section::make('Authentication')
+                Forms\Components\Section::make('Xác thực')
                     ->schema([
                         Forms\Components\TextInput::make('password')
+                            ->label('Mật khẩu')
                             ->password()
                             ->required(fn (string $operation) => $operation === 'create')
                             ->dehydrated(fn ($state) => filled($state))
                             ->revealable()
                             ->maxLength(255)
-                            ->helperText('Leave blank to keep current password'),
+                            ->helperText('Để trống để giữ mật khẩu hiện tại'),
 
                         Forms\Components\DateTimePicker::make('email_verified_at')
-                            ->label('Email Verified At')
+                            ->label('Email đã xác minh lúc')
                             ->default(now()),
                     ])
                     ->columns(2),
@@ -98,23 +109,34 @@ class UserResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('avatar')
+                    ->label('Ảnh')
                     ->disk('s3')
                     ->circular()
                     ->defaultImageUrl(url('/images/default-avatar.png')),
 
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Tên')
                     ->searchable()
                     ->sortable()
                     ->weight('bold'),
 
                 Tables\Columns\TextColumn::make('email')
+                    ->label('Email')
                     ->searchable()
                     ->sortable()
                     ->copyable(),
 
                 Tables\Columns\TextColumn::make('role')
+                    ->label('Vai trò')
                     ->sortable()
                     ->badge()
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'admin' => 'Quản trị viên',
+                        'editor' => 'Biên tập viên',
+                        'author' => 'Tác giả',
+                        'user' => 'Người dùng',
+                        default => $state,
+                    })
                     ->color(fn (string $state): string => match ($state) {
                         'admin' => 'danger',
                         'editor' => 'warning',
@@ -124,14 +146,14 @@ class UserResource extends Resource
 
                 Tables\Columns\TextColumn::make('articles_count')
                     ->counts('articles')
-                    ->label('Articles')
+                    ->label('Bài viết')
                     ->sortable()
                     ->badge()
                     ->color('primary'),
 
                 Tables\Columns\TextColumn::make('comments_count')
                     ->counts('comments')
-                    ->label('Comments')
+                    ->label('Bình luận')
                     ->sortable()
                     ->badge()
                     ->color('info'),
@@ -139,22 +161,24 @@ class UserResource extends Resource
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean()
                     ->sortable()
-                    ->label('Active'),
+                    ->label('Kích hoạt'),
 
                 Tables\Columns\TextColumn::make('email_verified_at')
                     ->dateTime()
                     ->sortable()
                     ->since()
-                    ->label('Verified')
+                    ->label('Đã xác minh')
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Ngày tạo')
                     ->dateTime()
                     ->sortable()
                     ->since()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Ngày cập nhật')
                     ->dateTime()
                     ->sortable()
                     ->since()
@@ -162,36 +186,41 @@ class UserResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('role')
+                    ->label('Vai trò')
                     ->options([
-                        'admin' => 'Admin',
-                        'editor' => 'Editor',
-                        'author' => 'Author',
-                        'user' => 'User',
+                        'admin' => 'Quản trị viên',
+                        'editor' => 'Biên tập viên',
+                        'author' => 'Tác giả',
+                        'user' => 'Người dùng',
                     ])
                     ->multiple(),
 
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Active')
+                    ->label('Kích hoạt')
                     ->boolean()
-                    ->trueLabel('Active only')
-                    ->falseLabel('Inactive only')
+                    ->trueLabel('Đang kích hoạt')
+                    ->falseLabel('Chưa kích hoạt')
                     ->native(false),
 
                 Tables\Filters\TernaryFilter::make('email_verified_at')
-                    ->label('Email Verification')
+                    ->label('Xác minh Email')
                     ->nullable()
-                    ->trueLabel('Verified only')
-                    ->falseLabel('Unverified only')
+                    ->trueLabel('Đã xác minh')
+                    ->falseLabel('Chưa xác minh')
                     ->native(false),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->label('Xem'),
+                Tables\Actions\EditAction::make()
+                    ->label('Sửa'),
+                Tables\Actions\DeleteAction::make()
+                    ->label('Xóa'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->label('Xóa'),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');

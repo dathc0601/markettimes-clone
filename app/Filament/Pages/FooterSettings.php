@@ -14,7 +14,7 @@ class FooterSettings extends Page implements Forms\Contracts\HasForms
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static string $view = 'filament.pages.footer-settings';
-    protected static ?string $navigationGroup = 'Management';
+    protected static ?string $navigationGroup = 'Quản lý';
     protected static ?int $navigationSort = 11;
     protected static ?string $title = 'Cài đặt Footer';
     protected static ?string $navigationLabel = 'Cài đặt Footer';

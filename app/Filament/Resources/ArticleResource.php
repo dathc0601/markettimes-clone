@@ -21,7 +21,13 @@ class ArticleResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-newspaper';
 
-    protected static ?string $navigationGroup = 'Content';
+    protected static ?string $navigationGroup = 'Nội dung';
+
+    protected static ?string $navigationLabel = 'Bài viết';
+
+    protected static ?string $modelLabel = 'Bài viết';
+
+    protected static ?string $pluralModelLabel = 'Bài viết';
 
     protected static ?int $navigationSort = 1;
 
@@ -44,15 +50,17 @@ class ArticleResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('General Information')
+                Forms\Components\Section::make('Thông tin chung')
                     ->schema([
                         Forms\Components\TextInput::make('title')
+                            ->label('Tiêu đề')
                             ->required()
                             ->maxLength(255)
                             ->live(onBlur: true)
                             ->afterStateUpdated(fn (string $operation, $state, Forms\Set $set) => $operation === 'create' ? $set('slug', \Illuminate\Support\Str::slug($state)) : null),
 
                         Forms\Components\TextInput::make('slug')
+                            ->label('Đường dẫn')
                             ->required()
                             ->maxLength(255)
                             ->disabled()
@@ -60,12 +68,14 @@ class ArticleResource extends Resource
                             ->unique(Article::class, 'slug', ignoreRecord: true),
 
                         Forms\Components\Select::make('category_id')
+                            ->label('Danh mục')
                             ->relationship('category', 'name')
                             ->required()
                             ->searchable()
                             ->preload(),
 
                         Forms\Components\Select::make('author_id')
+                            ->label('Tác giả')
                             ->relationship('author', 'name')
                             ->required()
                             ->default(auth()->id())
@@ -75,17 +85,20 @@ class ArticleResource extends Resource
                             ->dehydrated(),
 
                         Forms\Components\Select::make('tags')
+                            ->label('Thẻ')
                             ->relationship('tags', 'name')
                             ->multiple()
                             ->searchable()
                             ->preload()
                             ->createOptionForm([
                                 Forms\Components\TextInput::make('name')
+                                    ->label('Tên')
                                     ->required()
                                     ->maxLength(255),
                             ]),
 
                         Forms\Components\FileUpload::make('featured_image')
+                            ->label('Ảnh đại diện')
                             ->image()
                             ->disk('s3')
                             ->directory('articles')
@@ -113,11 +126,13 @@ class ArticleResource extends Resource
                             ->columnSpanFull(),
 
                         Forms\Components\Textarea::make('summary')
+                            ->label('Tóm tắt')
                             ->required()
                             ->rows(3)
                             ->columnSpanFull(),
 
                         Forms\Components\RichEditor::make('content')
+                            ->label('Nội dung')
                             ->required()
                             ->toolbarButtons([
                                 'bold',
@@ -160,18 +175,18 @@ class ArticleResource extends Resource
                     ])
                     ->columns(2),
 
-                Forms\Components\Section::make('Publishing')
+                Forms\Components\Section::make('Xuất bản')
                     ->schema([
                         Forms\Components\DateTimePicker::make('published_at')
-                            ->label('Publish Date')
+                            ->label('Ngày xuất bản')
                             ->default(now()),
 
                         Forms\Components\Toggle::make('is_published')
-                            ->label('Published')
+                            ->label('Hiển thị')
                             ->default(fn () => in_array(auth()->user()?->role, ['admin', 'editor'])),
 
                         Forms\Components\Toggle::make('is_featured')
-                            ->label('Featured Article')
+                            ->label('Bài viết nổi bật')
                             ->default(false),
 
                         Forms\Components\TextInput::make('view_count')
@@ -179,23 +194,23 @@ class ArticleResource extends Resource
                             ->default(0)
                             ->disabled()
                             ->dehydrated(false)
-                            ->label('View Count'),
+                            ->label('Lượt xem'),
                     ])
                     ->columns(2)
                     ->visible(fn () => in_array(auth()->user()?->role, ['admin', 'editor'])),
 
-                Forms\Components\Section::make('Article Status')
+                Forms\Components\Section::make('Trạng thái bài viết')
                     ->schema([
                         Forms\Components\Placeholder::make('status_display')
-                            ->label('Status')
+                            ->label('Trạng thái')
                             ->content(fn ($record) => match($record?->status) {
-                                'pending' => 'Pending Approval',
-                                'approved' => 'Approved',
-                                'rejected' => 'Rejected',
-                                default => 'Draft',
+                                'pending' => 'Chờ duyệt',
+                                'approved' => 'Đã duyệt',
+                                'rejected' => 'Từ chối',
+                                default => 'Bản nháp',
                             }),
                         Forms\Components\Placeholder::make('rejection_reason_display')
-                            ->label('Rejection Reason')
+                            ->label('Lý do từ chối')
                             ->content(fn ($record) => $record?->rejection_reason)
                             ->visible(fn ($record) => $record?->status === 'rejected'),
                     ])
@@ -205,11 +220,11 @@ class ArticleResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('meta_title')
                             ->maxLength(255)
-                            ->label('Meta Title'),
+                            ->label('Tiêu đề Meta'),
 
                         Forms\Components\Textarea::make('meta_description')
                             ->rows(3)
-                            ->label('Meta Description')
+                            ->label('Mô tả Meta')
                             ->columnSpanFull(),
                     ])
                     ->columns(2)
@@ -223,7 +238,7 @@ class ArticleResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('featured_image')
                     ->square()
-                    ->label('Image')
+                    ->label('Ảnh')
                     ->disk('s3')
                     ->getStateUsing(function ($record) {
                         if (!$record->featured_image) {
@@ -238,22 +253,26 @@ class ArticleResource extends Resource
                     }),
 
                 Tables\Columns\TextColumn::make('title')
+                    ->label('Tiêu đề')
                     ->searchable()
                     ->sortable()
                     ->limit(50),
 
                 Tables\Columns\TextColumn::make('category.name')
+                    ->label('Danh mục')
                     ->sortable()
                     ->searchable()
                     ->badge()
                     ->color('success'),
 
                 Tables\Columns\TextColumn::make('author.name')
+                    ->label('Tác giả')
                     ->sortable()
                     ->searchable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('status')
+                    ->label('Trạng thái')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'draft' => 'gray',
@@ -263,10 +282,10 @@ class ArticleResource extends Resource
                         default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'draft' => 'Draft',
-                        'pending' => 'Pending',
-                        'approved' => 'Approved',
-                        'rejected' => 'Rejected',
+                        'draft' => 'Bản nháp',
+                        'pending' => 'Chờ duyệt',
+                        'approved' => 'Đã duyệt',
+                        'rejected' => 'Từ chối',
                         default => $state,
                     })
                     ->visible(fn () => auth()->user()?->role === 'admin'),
@@ -274,83 +293,92 @@ class ArticleResource extends Resource
                 Tables\Columns\IconColumn::make('is_published')
                     ->boolean()
                     ->sortable()
-                    ->label('Published')
+                    ->label('Xuất bản')
                     ->visible(fn () => in_array(auth()->user()?->role, ['admin', 'editor'])),
 
                 Tables\Columns\IconColumn::make('is_featured')
                     ->boolean()
                     ->sortable()
-                    ->label('Featured')
+                    ->label('Nổi bật')
                     ->visible(fn () => in_array(auth()->user()?->role, ['admin', 'editor'])),
 
                 Tables\Columns\TextColumn::make('view_count')
                     ->numeric()
                     ->sortable()
-                    ->label('Views'),
+                    ->label('Lượt xem'),
 
                 Tables\Columns\TextColumn::make('published_at')
                     ->dateTime()
                     ->sortable()
                     ->since()
-                    ->label('Published'),
+                    ->label('Ngày xuất bản'),
 
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Ngày tạo')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Ngày cập nhật')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
+                    ->label('Trạng thái')
                     ->options([
-                        'draft' => 'Draft',
-                        'pending' => 'Pending Approval',
-                        'approved' => 'Approved',
-                        'rejected' => 'Rejected',
+                        'draft' => 'Bản nháp',
+                        'pending' => 'Chờ duyệt',
+                        'approved' => 'Đã duyệt',
+                        'rejected' => 'Từ chối',
                     ])
                     ->visible(fn () => auth()->user()?->role === 'admin'),
 
                 Tables\Filters\TernaryFilter::make('is_published')
-                    ->label('Published')
+                    ->label('Xuất bản')
                     ->boolean()
-                    ->trueLabel('Published only')
-                    ->falseLabel('Drafts only')
+                    ->trueLabel('Hiển thị')
+                    ->falseLabel('Đang ẩn')
                     ->native(false)
                     ->visible(fn () => auth()->user()?->role === 'admin'),
 
                 Tables\Filters\TernaryFilter::make('is_featured')
-                    ->label('Featured')
+                    ->label('Nổi bật')
                     ->boolean()
-                    ->trueLabel('Featured only')
-                    ->falseLabel('Not featured')
+                    ->trueLabel('Nổi bật')
+                    ->falseLabel('Không nổi bật')
                     ->native(false)
                     ->visible(fn () => auth()->user()?->role === 'admin'),
 
                 Tables\Filters\SelectFilter::make('category')
+                    ->label('Danh mục')
                     ->relationship('category', 'name')
                     ->searchable()
                     ->preload(),
 
                 Tables\Filters\SelectFilter::make('author')
+                    ->label('Tác giả')
                     ->relationship('author', 'name')
                     ->searchable()
                     ->preload()
                     ->visible(fn () => auth()->user()?->role === 'admin'),
 
                 Tables\Filters\TrashedFilter::make()
+                    ->label('Đã xóa')
                     ->visible(fn () => auth()->user()?->role === 'admin'),
             ])
             ->actions([
                 Tables\Actions\Action::make('approve')
+                    ->label('Duyệt')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->requiresConfirmation()
-                    ->modalHeading('Approve Article')
-                    ->modalDescription('Are you sure you want to approve this article? It will be published immediately.')
+                    ->modalHeading('Duyệt bài viết')
+                    ->modalDescription('Bạn có chắc chắn muốn duyệt bài viết này? Bài viết sẽ được xuất bản ngay lập tức.')
+                    ->modalSubmitActionLabel('Duyệt')
+                    ->modalCancelActionLabel('Hủy')
                     ->action(function (Article $record) {
                         $record->update([
                             'status' => 'approved',
@@ -364,14 +392,18 @@ class ArticleResource extends Resource
                     ->visible(fn (Article $record) => $record->status === 'pending' && auth()->user()?->role === 'admin'),
 
                 Tables\Actions\Action::make('reject')
+                    ->label('Từ chối')
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
+                    ->modalHeading('Từ chối bài viết')
+                    ->modalSubmitActionLabel('Từ chối')
+                    ->modalCancelActionLabel('Hủy')
                     ->form([
                         Forms\Components\Textarea::make('rejection_reason')
-                            ->label('Rejection Reason')
+                            ->label('Lý do từ chối')
                             ->required()
                             ->rows(3)
-                            ->placeholder('Explain why this article is being rejected...'),
+                            ->placeholder('Giải thích lý do bài viết bị từ chối...'),
                     ])
                     ->action(function (Article $record, array $data) {
                         $record->update([
@@ -382,17 +414,25 @@ class ArticleResource extends Resource
                     })
                     ->visible(fn (Article $record) => $record->status === 'pending' && auth()->user()?->role === 'admin'),
 
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\ForceDeleteAction::make(),
-                Tables\Actions\RestoreAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->label('Xem'),
+                Tables\Actions\EditAction::make()
+                    ->label('Sửa'),
+                Tables\Actions\DeleteAction::make()
+                    ->label('Xóa'),
+                Tables\Actions\ForceDeleteAction::make()
+                    ->label('Xóa vĩnh viễn'),
+                Tables\Actions\RestoreAction::make()
+                    ->label('Khôi phục'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                    Tables\Actions\ForceDeleteBulkAction::make(),
-                    Tables\Actions\RestoreBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->label('Xóa'),
+                    Tables\Actions\ForceDeleteBulkAction::make()
+                        ->label('Xóa vĩnh viễn'),
+                    Tables\Actions\RestoreBulkAction::make()
+                        ->label('Khôi phục'),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');

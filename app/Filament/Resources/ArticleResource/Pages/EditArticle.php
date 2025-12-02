@@ -20,12 +20,14 @@ class EditArticle extends EditRecord
         // Allow authors to resubmit rejected articles
         if (auth()->user()?->role === 'author' && $this->record->status === 'rejected') {
             array_unshift($actions, Actions\Action::make('resubmit')
-                ->label('Resubmit for Approval')
+                ->label('Gửi lại để duyệt')
                 ->icon('heroicon-o-arrow-path')
                 ->color('primary')
                 ->requiresConfirmation()
-                ->modalHeading('Resubmit Article')
-                ->modalDescription('Are you sure you want to resubmit this article for approval?')
+                ->modalHeading('Gửi lại bài viết')
+                ->modalDescription('Bạn có chắc chắn muốn gửi lại bài viết này để duyệt?')
+                ->modalSubmitActionLabel('Gửi lại')
+                ->modalCancelActionLabel('Hủy')
                 ->action(function () {
                     $this->record->update([
                         'status' => 'pending',
