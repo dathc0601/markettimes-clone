@@ -90,20 +90,25 @@ class ArticleResource extends Resource
                             ->disk('s3')
                             ->directory('articles')
                             ->imageEditor()
-                            ->afterStateHydrated(function (Forms\Components\FileUpload $component, $state) {
+                            ->formatStateUsing(function ($state) {
                                 if (!$state) {
-                                    return;
+                                    return [];
                                 }
-                                // If state is JSON, extract the original path
-                                $paths = is_string($state) ? json_decode($state, true) : $state;
-                                if (is_array($paths) && isset($paths['original'])) {
-                                    $component->state([$paths['original']]);
+                                // If it's JSON (legacy format), extract the original path
+                                if (is_string($state) && str_starts_with($state, '{')) {
+                                    $decoded = json_decode($state, true);
+                                    if (is_array($decoded) && isset($decoded['original'])) {
+                                        return [$decoded['original']];
+                                    }
                                 }
+                                // Return as array for FileUpload
+                                return is_array($state) ? $state : [$state];
                             })
                             ->saveUploadedFileUsing(function ($file) {
                                 $imageService = app(ImageService::class);
                                 $paths = $imageService->processUpload($file, 'articles');
-                                return json_encode($paths);
+                                // Return ONLY the original path (string, not JSON)
+                                return $paths['original'];
                             })
                             ->columnSpanFull(),
 

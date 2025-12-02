@@ -151,6 +151,7 @@ class Article extends Model
 
     /**
      * Get featured image paths (handles both old string format and new JSON array format)
+     * Derives all size variants from the original path using naming conventions.
      *
      * @return array|null
      */
@@ -162,19 +163,35 @@ class Article extends Model
             return null;
         }
 
-        // If it's already an array (JSON stored), return it
+        // If it's already an array, return it
         if (is_array($image)) {
             return $image;
         }
 
-        // Try to decode as JSON (new format)
-        $decoded = json_decode($image, true);
-        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-            return $decoded;
+        // Try to decode as JSON (legacy format with all paths stored)
+        if (is_string($image) && str_starts_with($image, '{')) {
+            $decoded = json_decode($image, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                return $decoded;
+            }
         }
 
-        // Old format (simple string path) - return as legacy format
-        return ['original' => $image];
+        // Derive all paths from original path using naming conventions
+        // e.g., images/articles/1234567890_abc123.jpg
+        $pathInfo = pathinfo($image);
+        $basePath = $pathInfo['dirname'] . '/' . $pathInfo['filename'];
+        $ext = $pathInfo['extension'] ?? 'jpg';
+
+        return [
+            'original' => $image,
+            'original_webp' => $basePath . '.webp',
+            'thumbnail' => $basePath . '_thumbnail.' . $ext,
+            'thumbnail_webp' => $basePath . '_thumbnail.webp',
+            'medium' => $basePath . '_medium.' . $ext,
+            'medium_webp' => $basePath . '_medium.webp',
+            'large' => $basePath . '_large.' . $ext,
+            'large_webp' => $basePath . '_large.webp',
+        ];
     }
 
     /**
