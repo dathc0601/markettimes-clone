@@ -179,13 +179,26 @@ class ArticleResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('status')
                             ->label('Trạng thái')
-                            ->options([
-                                'draft' => 'Bản nháp',
-                                'pending' => 'Chờ duyệt',
-                                'approved' => 'Đã duyệt',
-                                'rejected' => 'Từ chối',
-                            ])
-                            ->default('draft'),
+                            ->options(function () {
+                                $user = auth()->user();
+
+                                // Admin: all options
+                                if ($user?->role === 'admin') {
+                                    return [
+                                        'draft' => 'Bản nháp',
+                                        'pending' => 'Chờ duyệt',
+                                        'approved' => 'Đã duyệt',
+                                        'rejected' => 'Từ chối',
+                                    ];
+                                }
+
+                                // Editor: draft and approved only
+                                return [
+                                    'draft' => 'Bản nháp',
+                                    'approved' => 'Hiển thị',
+                                ];
+                            })
+                            ->default(fn () => auth()->user()?->role === 'editor' ? 'approved' : 'draft'),
 
                         Forms\Components\DateTimePicker::make('published_at')
                             ->label('Ngày xuất bản')
@@ -213,12 +226,31 @@ class ArticleResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('status')
                             ->label('Trạng thái')
-                            ->options([
-                                'draft' => 'Bản nháp',
-                                'pending' => 'Gửi duyệt',
-                            ])
-                            ->default('draft')
-                            ->helperText('Chọn "Gửi duyệt" để admin xem xét và phê duyệt bài viết'),
+                            ->options(function ($record) {
+                                // If article was previously approved (has approved_at)
+                                if ($record?->approved_at) {
+                                    return [
+                                        'draft' => 'Bản nháp',
+                                        'approved' => 'Hiển thị',
+                                    ];
+                                }
+
+                                // Not yet approved: draft or submit for approval
+                                return [
+                                    'draft' => 'Bản nháp',
+                                    'pending' => 'Chờ duyệt',
+                                ];
+                            })
+                            ->default(function ($record) {
+                                // If was approved, default to approved; otherwise pending
+                                return $record?->approved_at ? 'approved' : 'pending';
+                            })
+                            ->helperText(function ($record) {
+                                if ($record?->approved_at) {
+                                    return 'Bài viết đã được duyệt. Bạn có thể ẩn bằng cách chọn "Bản nháp"';
+                                }
+                                return 'Chọn "Chờ duyệt" để admin xem xét và phê duyệt bài viết';
+                            }),
 
                         Forms\Components\Placeholder::make('rejection_reason_display')
                             ->label('Lý do từ chối')
