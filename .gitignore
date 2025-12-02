@@ -22,6 +22,7 @@
 /public/sitemaps/
 /storage/*.key
 /storage/pail
+/storage/indexes/articles.index
 /vendor
 Homestead.json
 Homestead.yaml
