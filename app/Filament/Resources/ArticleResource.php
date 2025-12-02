@@ -177,6 +177,16 @@ class ArticleResource extends Resource
 
                 Forms\Components\Section::make('Xuất bản')
                     ->schema([
+                        Forms\Components\Select::make('status')
+                            ->label('Trạng thái')
+                            ->options([
+                                'draft' => 'Bản nháp',
+                                'pending' => 'Chờ duyệt',
+                                'approved' => 'Đã duyệt',
+                                'rejected' => 'Từ chối',
+                            ])
+                            ->default('draft'),
+
                         Forms\Components\DateTimePicker::make('published_at')
                             ->label('Ngày xuất bản')
                             ->default(now()),
@@ -201,14 +211,15 @@ class ArticleResource extends Resource
 
                 Forms\Components\Section::make('Trạng thái bài viết')
                     ->schema([
-                        Forms\Components\Placeholder::make('status_display')
+                        Forms\Components\Select::make('status')
                             ->label('Trạng thái')
-                            ->content(fn ($record) => match($record?->status) {
-                                'pending' => 'Chờ duyệt',
-                                'approved' => 'Đã duyệt',
-                                'rejected' => 'Từ chối',
-                                default => 'Bản nháp',
-                            }),
+                            ->options([
+                                'draft' => 'Bản nháp',
+                                'pending' => 'Gửi duyệt',
+                            ])
+                            ->default('draft')
+                            ->helperText('Chọn "Gửi duyệt" để admin xem xét và phê duyệt bài viết'),
+
                         Forms\Components\Placeholder::make('rejection_reason_display')
                             ->label('Lý do từ chối')
                             ->content(fn ($record) => $record?->rejection_reason)
@@ -448,16 +459,23 @@ class ArticleResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery();
+        $user = auth()->user();
 
-        // Only admin can see trashed articles
-        if (auth()->user()?->role === 'admin') {
+        // Admin can see trashed articles
+        if ($user?->role === 'admin') {
             $query->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
+
+            // Admin sees: own articles (any status) + others' non-draft articles
+            $query->where(function ($q) use ($user) {
+                $q->where('author_id', $user->id)
+                  ->orWhere('status', '!=', 'draft');
+            });
         }
 
         // Editors and authors can only see their own articles
-        if (in_array(auth()->user()?->role, ['editor', 'author'])) {
+        if (in_array($user?->role, ['editor', 'author'])) {
             $query->where('author_id', auth()->id());
         }
 

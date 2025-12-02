@@ -18,10 +18,20 @@ class CreateArticle extends CreateRecord
             $data['author_id'] = auth()->id();
         }
 
-        // Authors automatically submit for approval
+        // Authors: respect their status choice, ensure is_published is false
         if (auth()->user()?->role === 'author') {
-            $data['status'] = 'pending';
+            // Status comes from form (draft or pending)
+            // Ensure not published until approved
             $data['is_published'] = false;
+        }
+
+        // Editors and Admins: if publishing, set status to approved
+        if (in_array(auth()->user()?->role, ['admin', 'editor'])) {
+            if (!empty($data['is_published'])) {
+                $data['status'] = 'approved';
+                $data['approved_by'] = auth()->id();
+                $data['approved_at'] = now();
+            }
         }
 
         return $data;
