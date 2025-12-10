@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\Ad;
 use App\Models\NavigationItem;
+use App\Observers\AdObserver;
 use App\Observers\NavigationItemObserver;
+use App\Services\AdService;
 use App\Services\HomepageConfigService;
 use App\Services\NavigationService;
 use App\Services\SettingsService;
@@ -20,6 +23,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(HomepageConfigService::class, function ($app) {
             return new HomepageConfigService($app->make(SettingsService::class));
         });
+
+        $this->app->singleton(AdService::class, function ($app) {
+            return new AdService();
+        });
     }
 
     /**
@@ -35,6 +42,9 @@ class AppServiceProvider extends ServiceProvider
 
         // Register NavigationItem observer for automatic cache clearing
         NavigationItem::observe(NavigationItemObserver::class);
+
+        // Register Ad observer for automatic cache clearing
+        Ad::observe(AdObserver::class);
 
         // Share navigation items with navigation partial
         View::composer('partials.navigation', function ($view) {

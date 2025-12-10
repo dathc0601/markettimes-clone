@@ -7,6 +7,11 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-6">
+    {{-- Header Banner Ad --}}
+    <div class="mb-6">
+        <x-ad-slot position="category_header_banner" page="category" class="text-center" />
+    </div>
+
     @php
         // Check if this is a featured category to apply accent color
         $isFeaturedCategory = in_array(strtolower($category->slug), ['tieu-diem', 'highlights', 'featured']);
@@ -107,6 +112,11 @@
                 </section>
             @endif
 
+            {{-- Featured Below Ad --}}
+            <div class="mb-6">
+                <x-ad-slot position="category_featured_below" page="category" class="text-center" />
+            </div>
+
             @if($articles->count() > 0 || $heroArticle)
                 <div class="space-y-4 mb-8" id="articles-container">
                     @foreach($articles as $article)
@@ -141,7 +151,7 @@
 
         <!-- Sidebar -->
         <aside class="w-full lg:w-1/3">
-            @include('partials.sidebar', ['mostRead' => $mostRead])
+            @include('partials.sidebar', ['mostRead' => $mostRead, 'currentPage' => 'category'])
         </aside>
     </div>
 </div>

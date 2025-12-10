@@ -126,6 +126,11 @@
                 </script>
                 @endpush
 
+                <!-- Ad Before Content -->
+                <div class="mb-6">
+                    <x-ad-slot position="article_before_content" page="article" class="text-center" />
+                </div>
+
                 <!-- Featured Image -->
                 @if($article->featured_image)
                     @php
@@ -158,6 +163,11 @@
                     {!! $article->content !!}
                 </div>
 
+                <!-- Ad After Content -->
+                <div class="mb-8">
+                    <x-ad-slot position="article_after_content" page="article" class="text-center" />
+                </div>
+
                 <!-- Tags -->
                 @if($article->tags->count() > 0)
                     <div class="flex flex-wrap gap-2 mb-8 pt-6 border-t">
@@ -182,6 +192,11 @@
                     </div>
                 @endif
 
+                <!-- Ad Below Related Articles -->
+                <div class="my-8">
+                    <x-ad-slot position="article_related_below" page="article" class="text-center" />
+                </div>
+
                 <!-- Comments -->
                 <div class="border-t mt-8 pt-6">
                     <!-- Comment Form -->
@@ -197,7 +212,7 @@
 
             <!-- Sidebar -->
             <aside class="w-full lg:w-1/3">
-                @include('partials.sidebar', ['mostRead' => $mostRead])
+                @include('partials.sidebar', ['mostRead' => $mostRead, 'currentPage' => 'article'])
             </aside>
         </div>
     </div>

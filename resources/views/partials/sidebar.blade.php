@@ -44,11 +44,7 @@
             @elseif($blockKey === 'sidebar_valuation')
                 {{-- Valuation Forum Section --}}
                 <div class="mb-4 lg:mb-8">
-                    <div class="bg-gray-200 rounded-lg p-8 text-center text-gray-500 aspect-5/2 lg:aspect-square flex justify-center items-center">
-                        <div>
-                            <p class="text-sm">Quảng cáo</p>
-                        </div>
-                    </div>
+                    <x-ad-slot position="home_sidebar_middle_1" :page="$currentPage ?? 'homepage'" class="rounded-lg overflow-hidden" />
                 </div>
 
                 <div class="mb-4 lg:mb-8">
@@ -74,11 +70,7 @@
             @elseif($blockKey === 'sidebar_business')
                 {{-- Business Bridge Section --}}
                 <div class="mb-4 lg:mb-8">
-                    <div class="bg-gray-200 rounded-lg p-8 text-center text-gray-500 aspect-5/2 lg:aspect-square flex justify-center items-center">
-                        <div>
-                            <p class="text-sm">Quảng cáo</p>
-                        </div>
-                    </div>
+                    <x-ad-slot position="home_sidebar_middle_2" :page="$currentPage ?? 'homepage'" class="rounded-lg overflow-hidden" />
                 </div>
 
                 <div class="mb-4 lg:mb-8">
@@ -104,11 +96,7 @@
             @elseif($blockKey === 'sidebar_special')
                 {{-- Special Publications Section --}}
                 <div class="mb-4 lg:mb-8">
-                    <div class="bg-gray-200 rounded-lg p-8 text-center text-gray-500 aspect-5/2 lg:aspect-square flex justify-center items-center">
-                        <div>
-                            <p class="text-sm">Quảng cáo</p>
-                        </div>
-                    </div>
+                    <x-ad-slot position="home_sidebar_middle_3" :page="$currentPage ?? 'homepage'" class="rounded-lg overflow-hidden" />
                 </div>
 
                 <div class="mb-4 lg:mb-8">
@@ -130,11 +118,7 @@
                 {{-- Generic Block (fallback) --}}
                 @if($blockIndex > 0)
                     <div class="mb-4 lg:mb-8">
-                        <div class="bg-gray-200 rounded-lg p-8 text-center text-gray-500 aspect-5/2 lg:aspect-square flex justify-center items-center">
-                            <div>
-                                <p class="text-sm">Quảng cáo</p>
-                            </div>
-                        </div>
+                        <x-ad-slot position="home_sidebar_top" :page="$currentPage ?? 'homepage'" class="rounded-lg overflow-hidden" />
                     </div>
                 @endif
 
@@ -195,11 +179,7 @@
         {{-- Valuation Forum Section --}}
         @if(($sectionConfig['sidebar_valuation']['enabled'] ?? true) && isset($valuationArticles) && $valuationArticles->count() > 0)
             <div class="mb-4 lg:mb-8">
-                <div class="bg-gray-200 rounded-lg p-8 text-center text-gray-500 aspect-5/2 lg:aspect-square flex justify-center items-center">
-                    <div>
-                        <p class="text-sm">Quảng cáo</p>
-                    </div>
-                </div>
+                <x-ad-slot position="home_sidebar_middle_1" :page="$currentPage ?? 'homepage'" class="rounded-lg overflow-hidden" />
             </div>
 
             <div class="mb-4 lg:mb-8">
@@ -227,11 +207,7 @@
         {{-- Business Bridge Section --}}
         @if(($sectionConfig['sidebar_business']['enabled'] ?? true) && isset($businessArticles) && $businessArticles->count() > 0)
             <div class="mb-4 lg:mb-8">
-                <div class="bg-gray-200 rounded-lg p-8 text-center text-gray-500 aspect-5/2 lg:aspect-square flex justify-center items-center">
-                    <div>
-                        <p class="text-sm">Quảng cáo</p>
-                    </div>
-                </div>
+                <x-ad-slot position="home_sidebar_middle_2" :page="$currentPage ?? 'homepage'" class="rounded-lg overflow-hidden" />
             </div>
 
             <div class="mb-4 lg:mb-8">
@@ -259,11 +235,7 @@
         {{-- Special Publications Section --}}
         @if(($sectionConfig['sidebar_special']['enabled'] ?? true) && isset($specialPublications) && $specialPublications->count() > 0)
             <div class="mb-4 lg:mb-8">
-                <div class="bg-gray-200 rounded-lg p-8 text-center text-gray-500 aspect-5/2 lg:aspect-square flex justify-center items-center">
-                    <div>
-                        <p class="text-sm">Quảng cáo</p>
-                    </div>
-                </div>
+                <x-ad-slot position="home_sidebar_middle_3" :page="$currentPage ?? 'homepage'" class="rounded-lg overflow-hidden" />
             </div>
 
             <div class="mb-4 lg:mb-8">

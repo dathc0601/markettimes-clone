@@ -16,6 +16,11 @@
         <div class="h-12"></div> {{-- Spacer for fixed banner --}}
     @endif
 
+    {{-- Header Banner Ad --}}
+    <div class="max-w-7xl mx-auto px-4 py-4">
+        <x-ad-slot position="home_header_banner" page="homepage" class="text-center" />
+    </div>
+
     {{-- Hero & Featured Articles Section --}}
     @if(($sectionConfig['hero']['enabled'] ?? true) || ($sectionConfig['featured_grid']['enabled'] ?? true))
         @if(isset($heroArticle) && isset($featuredArticles) && $featuredArticles->count() >= 2)
@@ -138,6 +143,11 @@
             </section>
         @endif
     @endif
+
+    {{-- Hero Below Ad --}}
+    <div class="max-w-7xl mx-auto px-4 pb-6">
+        <x-ad-slot position="home_hero_below" page="homepage" class="text-center" />
+    </div>
 
     {{-- Teal Highlighted Section (Most Read) --}}
     @if(($sectionConfig['most_read_teal']['enabled'] ?? true) && isset($mostReadTeal) && $mostReadTeal->count() > 0)
@@ -282,7 +292,8 @@
                         'valuationArticles' => $valuationArticles,
                         'businessArticles' => $businessArticles,
                         'specialPublications' => $specialPublications,
-                        'sectionConfig' => $sectionConfig ?? []
+                        'sectionConfig' => $sectionConfig ?? [],
+                        'currentPage' => 'homepage'
                     ])
                 </aside>
             </div>

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:wght@700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -458,4 +460,76 @@
         color: #6b7280;
         resize: vertical;
     }
+}
+
+/* Ad Slot Styles */
+.ad-slot {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.ad-slot__link {
+    display: block;
+    line-height: 0;
+}
+
+.ad-slot__image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+}
+
+.ad-slot__html {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Sidebar ad slots */
+.ad-slot--home_sidebar_top,
+.ad-slot--home_sidebar_middle_1,
+.ad-slot--home_sidebar_middle_2,
+.ad-slot--home_sidebar_middle_3,
+.ad-slot--article_sidebar_sticky,
+.ad-slot--category_sidebar_top {
+    margin-bottom: 1rem;
+    background-color: #f9fafb;
+    border-radius: 0.5rem;
+    min-height: 250px;
+}
+
+/* Sticky sidebar ad */
+.ad-slot--article_sidebar_sticky {
+    position: sticky;
+    top: 1rem;
+}
+
+/* In-content ad slots */
+.ad-slot--article_in_content {
+    float: right;
+    margin: 0 0 1rem 1rem;
+    max-width: 300px;
+}
+
+@media (max-width: 768px) {
+    .ad-slot--article_in_content {
+        float: none;
+        margin: 1rem auto;
+        max-width: 100%;
+    }
+
+    /* Hide large banner ads on mobile for better UX */
+    .ad-slot--home_header_banner,
+    .ad-slot--article_header_banner,
+    .ad-slot--category_header_banner {
+        display: none;
+    }
+}
+
+/* Empty ad slot fallback (when no ad is configured) */
+.ad-slot:empty {
+    display: none;
 }
