@@ -263,7 +263,7 @@
                                         <button id="load-more-btn-home"
                                                 data-page="{{ $latestArticles->currentPage() + 1 }}"
                                                 class="block text-center w-full px-6 py-3 bg-primary hover:bg-primary-dark text-white font-semibold rounded-lg transition-colors duration-200">
-                                            Xem them
+                                            Xem thêm
                                         </button>
                                     </div>
                                 @else
