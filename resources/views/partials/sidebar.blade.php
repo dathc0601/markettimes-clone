@@ -184,12 +184,7 @@
 
             <div class="mb-4 lg:mb-8">
                 <h3 class="text-lg font-bold text-gray-900 mb-4 pb-2 border-b-2 border-teal-600">
-                    @php
-                        $valuationCategorySlug = $sectionConfig['sidebar_valuation']['source_config']['category_slug'] ?? 'tham-dinh-gia';
-                    @endphp
-                    <a href="{{ route('category.show', $valuationCategorySlug) }}" class="hover:text-teal-600 transition-colors">
-                        {{ $sectionConfig['sidebar_valuation']['title'] ?? 'Tuyển chọn' }}
-                    </a>
+                    {{ $sectionConfig['sidebar_valuation']['title'] ?? 'Tuyển chọn' }}
                 </h3>
 
                 <div class="space-y-4">
@@ -212,12 +207,7 @@
 
             <div class="mb-4 lg:mb-8">
                 <h3 class="text-lg font-bold text-gray-900 mb-4 pb-2 border-b-2 border-teal-600">
-                    @php
-                        $businessCategorySlug = $sectionConfig['sidebar_business']['source_config']['category_slug'] ?? 'kinh-doanh';
-                    @endphp
-                    <a href="{{ route('category.show', $businessCategorySlug) }}" class="hover:text-teal-600 transition-colors">
-                        {{ $sectionConfig['sidebar_business']['title'] ?? 'Doanh nghiệp' }}
-                    </a>
+                    {{ $sectionConfig['sidebar_business']['title'] ?? 'Doanh nghiệp' }}
                 </h3>
 
                 <div class="space-y-4">
