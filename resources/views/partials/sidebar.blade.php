@@ -49,12 +49,7 @@
 
                 <div class="mb-4 lg:mb-8">
                     <h3 class="text-lg font-bold text-gray-900 mb-4 pb-2 border-b-2 border-teal-600">
-                        @php
-                            $categorySlug = $blockConfig['source_config']['category_slug'] ?? 'tham-dinh-gia';
-                        @endphp
-                        <a href="{{ route('category.show', $categorySlug) }}" class="hover:text-teal-600 transition-colors">
-                            {{ $blockTitle }}
-                        </a>
+                        {{ $blockTitle }}
                     </h3>
 
                     <div class="space-y-4">
@@ -75,12 +70,7 @@
 
                 <div class="mb-4 lg:mb-8">
                     <h3 class="text-lg font-bold text-gray-900 mb-4 pb-2 border-b-2 border-teal-600">
-                        @php
-                            $categorySlug = $blockConfig['source_config']['category_slug'] ?? 'kinh-doanh';
-                        @endphp
-                        <a href="{{ route('category.show', $categorySlug) }}" class="hover:text-teal-600 transition-colors">
-                            {{ $blockTitle }}
-                        </a>
+                        {{ $blockTitle }}
                     </h3>
 
                     <div class="space-y-4">
@@ -140,7 +130,6 @@
             @endif
         @endif
     @empty
-        {{-- Fallback to legacy variables if sidebarBlocks is empty --}}
         {{-- Most Read Section --}}
         @if(($sectionConfig['sidebar_most_read']['enabled'] ?? true) && isset($mostRead) && $mostRead->count() > 0)
             <div class="mb-4 lg:mb-8">
