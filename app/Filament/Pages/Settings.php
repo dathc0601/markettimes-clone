@@ -192,8 +192,6 @@ class Settings extends Page implements Forms\Contracts\HasForms
                                             ->disk('s3')
                                             ->directory('settings/logos')
                                             ->maxSize(2048)
-                                            ->imageResizeMode('contain')
-                                            ->imageCropAspectRatio('16:9')
                                             ->helperText('Tải lên logo của website (PNG/JPG, tối đa 2MB)'),
 
                                         Forms\Components\FileUpload::make('site_favicon')
