@@ -95,7 +95,12 @@ class ArticleResource extends Resource
                                     ->label('Tên')
                                     ->required()
                                     ->maxLength(255),
-                            ]),
+                            ])
+                            ->createOptionUsing(function (array $data): int {
+                                return \App\Models\Tag::firstOrCreate(
+                                    ['name' => $data['name']]
+                                )->id;
+                            }),
 
                         Forms\Components\FileUpload::make('featured_image')
                             ->label('Ảnh đại diện')
